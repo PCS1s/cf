@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Complaint Form</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* --- 1. Amazing Animated Background --- */
+        body {
+            background: linear-gradient(-45deg, #1a237e, #3f51b5, #009688, #283593);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* --- 2. Glassmorphism effect for the form container --- */
+        .form-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        /* --- 3. Standard Styles (from original file) --- */
+        .form-section {
+            transition: all 0.3s ease;
+        }
+        .form-section:not(.active) {
+            display: none;
+        }
+        .input-error {
+            border-color: #f87171;
+        }
+        .error-message {
+            color: #f87171;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        .complaint-type-btn {
+            transition: all 0.2s ease;
+        }
+        .complaint-type-btn.active {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        .confirmation-icon {
+            animation: scaleUp 0.5s ease-in-out;
+        }
+        @keyframes scaleUp {
+            0% { transform: scale(0); opacity: 0; }
+            80% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-3xl rounded-xl shadow-2xl overflow-hidden form-container">
+        <!-- Form Header -->
+        <div class="bg-blue-600 p-6 text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold">Customer Complaint Form</h1>
+                    <p class="text-blue-100">Your feedback helps us improve our services</p>
+                </div>
+                <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Steps -->
+        <div class="px-6 pt-4 pb-2">
+            <div class="flex justify-between items-center relative">
+                <div class="absolute top-1/2 left-0 w-full h-1 bg-gray-200 -z-10"></div>
+                <div id="progress-bar" class="absolute top-1/2 left-0 h-1 bg-blue-500 -z-10 transition-all duration-500 ease-in-out" style="width: 33.33%"></div>
+                
+                <div class="step flex flex-col items-center relative">
+                    <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold">1</div>
+                    <p class="text-xs mt-1 text-blue-600 font-medium">Personal Info</p>
+                </div>
+                <div class="step flex flex-col items-center">
+                    <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-600">2</div>
+                    <p class="text-xs mt-1 text-gray-500">Complaint Details</p>
+                </div>
+                <div class="step flex flex-col items-center">
+                    <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-600">3</div>
+                    <p class="text-xs mt-1 text-gray-500">Review</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 
+            CHANGE #1: The 'action' attribute is updated.
+            REPLACE 'your-email@example.com' with your real email address.
+        -->
+        <form id="complaintForm" class="p-6 space-y-6" action="https://formsubmit.co/62be0756c8446a1bbab6b3b06d67208f" method="post" enctype="multipart/form-data">
+            
+            <!-- This hidden input tells FormSubmit where to redirect the user after submission. -->
+            <input type="hidden" name="_next" value="https://pcs1s.github.io/PrivateCybersecurityServices/">
+            <!-- This handles the subject line of the email you receive. -->
+            <input type="hidden" name="_subject" value="New Complaint Submitted!">
+
+
+            <!-- Section 1: Personal Information -->
+            <div class="form-section active" id="section1">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">Personal Information</h2>
+                
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="firstName" class="block text-sm font-medium text-gray-700 mb-1">First Name*</label>
+                        <input type="text" id="firstName" name="First Name" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80" required>
+                        <div id="firstName-error" class="error-message"></div>
+                    </div>
+                    
+                    <div>
+                        <label for="lastName" class="block text-sm font-medium text-gray-700 mb-1">Last Name*</label>
+                        <input type="text" id="lastName" name="Last Name" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80" required>
+                        <div id="lastName-error" class="error-message"></div>
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address*</label>
+                    <input type="email" id="email" name="Email" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80" required>
+                    <div id="email-error" class="error-message"></div>
+                </div>
+                
+                <div>
+                    <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                    <input type="tel" id="phone" name="Phone" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80">
+                    <div id="phone-error" class="error-message"></div>
+                </div>
+
+                <div>
+                    <label for="age" class="block text-sm font-medium text-gray-700 mb-1">Age</label>
+                    <input type="number" id="age" name="Age" min="18" max="120" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80">
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="country" class="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                        <select id="country" name="Country" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80">
+                            <option value="">Select Country</option>
+                           
+                              <option value="AF">Afghanistan</option>
+        <option value="AL">Albania</option>
+        <option value="DZ">Algeria</option>
+        <option value="AS">American Samoa</option>
+        <option value="AD">Andorra</option>
+        <option value="AO">Angola</option>
+        <option value="AI">Anguilla</option>
+        <option value="AQ">Antarctica</option>
+        <option value="AG">Antigua and Barbuda</option>
+        <option value="AR">Argentina</option>
+        <option value="AM">Armenia</option>
+        <option value="AW">Aruba</option>
+        <option value="AU">Australia</option>
+        <option value="AT">Austria</option>
+        <option value="AZ">Azerbaijan</option>
+        <option value="BS">Bahamas</option>
+        <option value="BH">Bahrain</option>
+        <option value="BD">Bangladesh</option>
+        <option value="BB">Barbados</option>
+        <option value="BY">Belarus</option>
+        <option value="BE">Belgium</option>
+        <option value="BZ">Belize</option>
+        <option value="BJ">Benin</option>
+        <option value="BM">Bermuda</option>
+        <option value="BT">Bhutan</option>
+        <option value="BO">Bolivia</option>
+        <option value="BA">Bosnia and Herzegovina</option>
+        <option value="BW">Botswana</option>
+        <option value="BR">Brazil</option>
+        <option value="IO">British Indian Ocean Territory</option>
+        <option value="BN">Brunei Darussalam</option>
+        <option value="BG">Bulgaria</option>
+        <option value="BF">Burkina Faso</option>
+        <option value="BI">Burundi</option>
+        <option value="KH">Cambodia</option>
+        <option value="CM">Cameroon</option>
+        <option value="CA">Canada</option>
+        <option value="CV">Cape Verde</option>
+        <option value="KY">Cayman Islands</option>
+        <option value="CF">Central African Republic</option>
+        <option value="TD">Chad</option>
+        <option value="CL">Chile</option>
+        <option value="CN">China</option>
+        <option value="CX">Christmas Island</option>
+        <option value="CC">Cocos (Keeling) Islands</option>
+        <option value="CO">Colombia</option>
+        <option value="KM">Comoros</option>
+        <option value="CG">Congo</option>
+        <option value="CD">Congo, the Democratic Republic of the</option>
+        <option value="CK">Cook Islands</option>
+        <option value="CR">Costa Rica</option>
+        <option value="CI">Côte d'Ivoire</option>
+        <option value="HR">Croatia</option>
+        <option value="CU">Cuba</option>
+        <option value="CY">Cyprus</option>
+        <option value="CZ">Czech Republic</option>
+        <option value="DK">Denmark</option>
+        <option value="DJ">Djibouti</option>
+        <option value="DM">Dominica</option>
+        <option value="DO">Dominican Republic</option>
+        <option value="EC">Ecuador</option>
+        <option value="EG">Egypt</option>
+        <option value="SV">El Salvador</option>
+        <option value="GQ">Equatorial Guinea</option>
+        <option value="ER">Eritrea</option>
+        <option value="EE">Estonia</option>
+        <option value="ET">Ethiopia</option>
+        <option value="FJ">Fiji</option>
+        <option value="FI">Finland</option>
+        <option value="FR">France</option>
+        <option value="GA">Gabon</option>
+        <option value="GM">Gambia</option>
+        <option value="GE">Georgia</option>
+        <option value="DE">Germany</option>
+        <option value="GH">Ghana</option>
+        <option value="GR">Greece</option>
+        <option value="GD">Grenada</option>
+        <option value="GU">Guam</option>
+        <option value="GT">Guatemala</option>
+        <option value="GN">Guinea</option>
+        <option value="GW">Guinea-Bissau</option>
+        <option value="GY">Guyana</option>
+        <option value="HT">Haiti</option>
+        <option value="HN">Honduras</option>
+        <option value="HK">Hong Kong</option>
+        <option value="HU">Hungary</option>
+        <option value="IS">Iceland</option>
+        <option value="IN">India</option>
+        <option value="ID">Indonesia</option>
+        <option value="IR">Iran</option>
+        <option value="IQ">Iraq</option>
+        <option value="IE">Ireland</option>
+        <option value="IL">Israel</option>
+        <option value="IT">Italy</option>
+        <option value="JM">Jamaica</option>
+        <option value="JP">Japan</option>
+        <option value="JO">Jordan</option>
+        <option value="KZ">Kazakhstan</option>
+        <option value="KE">Kenya</option>
+        <option value="KI">Kiribati</option>
+        <option value="KP">Korea, North</option>
+        <option value="KR">Korea, South</option>
+        <option value="KW">Kuwait</option>
+        <option value="KG">Kyrgyzstan</option>
+        <option value="LA">Laos</option>
+        <option value="LV">Latvia</option>
+        <option value="LB">Lebanon</option>
+        <option value="LS">Lesotho</option>
+        <option value="LR">Liberia</option>
+        <option value="LY">Libya</option>
+        <option value="LI">Liechtenstein</option>
+        <option value="LT">Lithuania</option>
+        <option value="LU">Luxembourg</option>
+        <option value="MO">Macau</option>
+        <option value="MK">North Macedonia</option>
+        <option value="MG">Madagascar</option>
+        <option value="MW">Malawi</option>
+        <option value="MY">Malaysia</option>
+        <option value="MV">Maldives</option>
+        <option value="ML">Mali</option>
+        <option value="MT">Malta</option>
+        <option value="MH">Marshall Islands</option>
+        <option value="MR">Mauritania</option>
+        <option value="MU">Mauritius</option>
+        <option value="MX">Mexico</option>
+        <option value="FM">Micronesia</option>
+        <option value="MD">Moldova</option>
+        <option value="MC">Monaco</option>
+        <option value="MN">Mongolia</option>
+        <option value="ME">Montenegro</option>
+        <option value="MA">Morocco</option>
+        <option value="MZ">Mozambique</option>
+        <option value="MM">Myanmar</option>
+        <option value="NA">Namibia</option>
+        <option value="NR">Nauru</option>
+        <option value="NP">Nepal</option>
+        <option value="NL">Netherlands</option>
+        <option value="NZ">New Zealand</option>
+        <option value="NI">Nicaragua</option>
+        <option value="NE">Niger</option>
+        <option value="NG">Nigeria</option>
+        <option value="NO">Norway</option>
+        <option value="OM">Oman</option>
+        <option value="PK">Pakistan</option>
+        <option value="PW">Palau</option>
+        <option value="PA">Panama</option>
+        <option value="PG">Papua New Guinea</option>
+        <option value="PY">Paraguay</option>
+        <option value="PE">Peru</option>
+        <option value="PH">Philippines</option>
+        <option value="PL">Poland</option>
+        <option value="PT">Portugal</option>
+        <option value="QA">Qatar</option>
+        <option value="RO">Romania</option>
+        <option value="RU">Russia</option>
+        <option value="RW">Rwanda</option>
+        <option value="KN">Saint Kitts and Nevis</option>
+        <option value="LC">Saint Lucia</option>
+        <option value="VC">Saint Vincent and the Grenadines</option>
+        <option value="WS">Samoa</option>
+        <option value="SM">San Marino</option>
+        <option value="ST">Sao Tome and Principe</option>
+        <option value="SA">Saudi Arabia</option>
+        <option value="SN">Senegal</option>
+        <option value="RS">Serbia</option>
+        <option value="SC">Seychelles</option>
+        <option value="SL">Sierra Leone</option>
+        <option value="SG">Singapore</option>
+        <option value="SK">Slovakia</option>
+        <option value="SI">Slovenia</option>
+        <option value="SB">Solomon Islands</option>
+        <option value="SO">Somalia</option>
+        <option value="ZA">South Africa</option>
+        <option value="SS">South Sudan</option>
+        <option value="ES">Spain</option>
+        <option value="LK">Sri Lanka</option>
+        <option value="SD">Sudan</option>
+        <option value="SR">Suriname</option>
+        <option value="SE">Sweden</option>
+        <option value="CH">Switzerland</option>
+        <option value="SY">Syria</option>
+        <option value="TW">Taiwan</option>
+        <option value="TJ">Tajikistan</option>
+        <option value="TZ">Tanzania</option>
+        <option value="TH">Thailand</option>
+        <option value="TL">Timor-Leste</option>
+        <option value="TG">Togo</option>
+        <option value="TO">Tonga</option>
+        <option value="TT">Trinidad and Tobago</option>
+        <option value="TN">Tunisia</option>
+        <option value="TR">Turkey</option>
+        <option value="TM">Turkmenistan</option>
+        <option value="TV">Tuvalu</option>
+        <option value="UG">Uganda</option>
+        <option value="UA">Ukraine</option>
+        <option value="AE">United Arab Emirates</option>
+        <option value="GB">United Kingdom</option>
+        <option value="US">United States</option>
+        <option value="UY">Uruguay</option>
+        <option value="UZ">Uzbekistan</option>
+        <option value="VU">Vanuatu</option>
+        <option value="VA">Vatican City</option>
+        <option value="VE">Venezuela</option>
+        <option value="VN">Vietnam</option>
+        <option value="YE">Yemen</option>
+        <option value="ZM">Zambia</option>
+        <option value="ZW">Zimbabwe</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="state" class="block text-sm font-medium text-gray-700 mb-1">State/Province</label>
+                        <input type="text" id="state" name="State" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80">
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="city" class="block text-sm font-medium text-gray-700 mb-1">City</label>
+                        <input type="text" id="city" name="City" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80">
+                    </div>
+                    <div>
+                        <label for="county" class="block text-sm font-medium text-gray-700 mb-1">County</label>
+                        <input type="text" id="county" name="County" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Street Address</label>
+                    <input type="text" id="address" name="Address" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80">
+                </div>
+
+                <div>
+                    <label for="zip" class="block text-sm font-medium text-gray-700 mb-1">ZIP/Postal Code</label>
+                    <input type="text" id="zip" name="ZIP Code" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80">
+                </div>
+                
+                <div class="flex justify-end pt-4">
+                    <button type="button" onclick="nextSection(1, 2)" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Next</button>
+                </div>
+            </div>
+
+            <!-- Section 2: Complaint Details -->
+            <div class="form-section" id="section2">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">Complaint Details</h2>
+                
+                   <div class="form-group mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Were you the one affected in this incident?</label>
+                    <div class="flex gap-4">
+                        <div class="flex items-center">
+                            <input type="radio" id="affectedYes" name="Affected" value="yes" class="h-4 w-4 text-blue-600 border-gray-300">
+                            <label for="affectedYes" class="ml-2 block text-sm text-gray-900">Yes</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="radio" id="affectedNo" name="Affected" value="no" checked class="h-4 w-4 text-blue-600 border-gray-300">
+                            <label for="affectedNo" class="ml-2 block text-sm text-gray-900">No</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Fraud Type*</label>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                        <button type="button" onclick="selectComplaintType('Crypto Scam')" class="complaint-type-btn px-4 py-2 border rounded-lg text-sm">Crypto Scam</button>
+                        <button type="button" onclick="selectComplaintType('Dating and Romance Scam')" class="complaint-type-btn px-4 py-2 border rounded-lg text-sm">Dating and Romance Scam</button>
+                        <button type="button" onclick="selectComplaintType('Investment Scam')" class="complaint-type-btn px-4 py-2 border rounded-lg text-sm">Investment Scam</button>
+                        <button type="button" onclick="selectComplaintType('Identity Theft')" class="complaint-type-btn px-4 py-2 border rounded-lg text-sm">Identity Theft</button>
+                        <button type="button" onclick="selectComplaintType('Hack or Fishing Link')" class="complaint-type-btn px-4 py-2 border rounded-lg text-sm">Hack or Fishing Link</button>
+                        <button type="button" onclick="selectComplaintType('Other')" class="complaint-type-btn px-4 py-2 border rounded-lg text-sm">Other</button>
+                    </div>
+                    <input type="hidden" id="complaintType" name="Fraud Type" required>
+                    <div id="complaintType-error" class="error-message"></div>
+                </div>
+                
+                <div class="mb-6">
+                    <label for="TotalAmountLost" class="block text-sm font-medium text-gray-700 mb-1">Total Amount Lost</label>
+                    <input type="number" id="TotalAmountLost" name="Total Amount Lost" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80">
+                </div>
+
+               
+                <div class="mb-6">
+                    <label for="complaintDate" class="block text-sm font-medium text-gray-700 mb-1">Date of Incident*</label>
+                    <input type="date" id="complaintDate" name="Date of Incident" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80" required>
+                    <div id="complaintDate-error" class="error-message"></div>
+                </div>
+                
+                <div class="mb-6">
+                    <label for="complaintDetails" class="block text-sm font-medium text-gray-700 mb-1">Complaint Details*</label>
+                    <textarea id="complaintDetails" name="Complaint Details" rows="4" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80" required placeholder="Please describe your complaint in detail..."></textarea>
+                    <div id="complaintDetails-error" class="error-message"></div>
+                </div>
+                
+                <div class="mb-6">
+                    <label for="desiredResolution" class="block text-sm font-medium text-gray-700 mb-1">Desired Resolution</label>
+                    <textarea id="desiredResolution" name="Desired Resolution" rows="2" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80" placeholder="What would you like us to do to resolve this issue?"></textarea>
+                </div>
+                
+                <div class="form-group mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Did you contact your bank, financial institution, or Crypto Money Exchange?</label>
+                    <div class="flex gap-4">
+                        <div class="flex items-center">
+                            <input type="radio" id="contactedBankYes" name="Contacted Bank" value="yes" class="h-4 w-4 text-blue-600 border-gray-300">
+                            <label for="contactedBankYes" class="ml-2 block text-sm text-gray-900">Yes</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="radio" id="contactedBankNo" name="Contacted Bank" value="no" checked class="h-4 w-4 text-blue-600 border-gray-300">
+                            <label for="contactedBankNo" class="ml-2 block text-sm text-gray-900">No</label>
+                        </div>
+                    </div>
+                </div>
+
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">Proof of Payment</h2>
+
+                <div class="text-center mb-4">
+                    <a href="#" class="font-medium text-blue-600 hover:text-blue-700 hover:underline" target="_blank">
+                        Proceed to Payment
+                    </a>
+                </div>
+                
+                <div class="flex items-center mb-4">
+                    <input type="checkbox" id="paymentConfirmation" name="Payment Confirmed" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" required>
+                    <label for="paymentConfirmation" class="ml-2 block text-sm text-gray-700">I confirm that a payment was made for this service*</label>
+                </div>
+                <div id="paymentConfirmation-error" class="error-message mb-4"></div>
+                
+                <div class="mb-6">
+                    <label for="mediaUpload" class="block text-sm font-medium text-gray-700 mb-2">Upload Photos/Videos (must contain payment slip)*</label>
+                    <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg bg-gray-50">
+                        <div class="space-y-1 text-center">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            <div class="flex text-sm text-gray-600">
+                                <label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none">
+                                    <span>Upload files</span>
+                                    <input id="file-upload" name="attachment" type="file" class="sr-only" multiple accept="image/*,video/*">
+                                </label>
+                                <p class="pl-1">or drag and drop</p>
+                            </div>
+                            <p class="text-xs text-gray-500">PNG, JPG, MP4 up to 10MB</p>
+                        </div>
+                    </div>
+                    <div id="file-upload-error" class="error-message"></div>
+                </div>
+                
+                <div class="flex justify-between pt-2">
+                    <button type="button" onclick="prevSection(2, 1)" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">Back</button>
+                    <button type="button" onclick="nextSection(2, 3)" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Next</button>
+                </div>
+            </div>
+
+            <!-- Section 3: Review & Submit -->
+            <div class="form-section" id="section3">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">Review Your Complaint</h2>
+                
+                <div class="bg-gray-50 p-4 rounded-lg mb-6 space-y-4">
+                    <div>
+                        <h3 class="font-medium text-gray-900 mb-2 border-b pb-2">Personal Information</h3>
+                        <div class="grid md:grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                            <div><span class="text-gray-500">Name:</span> <strong id="review-name" class="text-gray-800"></strong></div>
+                            <div><span class="text-gray-500">Email:</span> <strong id="review-email" class="text-gray-800"></strong></div>
+                            <div><span class="text-gray-500">Phone:</span> <strong id="review-phone" class="text-gray-800"></strong></div>
+                            <div><span class="text-gray-500">Age:</span> <strong id="review-age" class="text-gray-800"></strong></div>
+                            <div class="md:col-span-2"><span class="text-gray-500">Address:</span> <strong id="review-address" class="text-gray-800"></strong></div>
+                            <div><span class="text-gray-500">City:</span> <strong id="review-city" class="text-gray-800"></strong></div>
+                            <div><span class="text-gray-500">State:</span> <strong id="review-state" class="text-gray-800"></strong></div>
+                            <div><span class="text-gray-500">Zip Code:</span> <strong id="review-zip" class="text-gray-800"></strong></div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="font-medium text-gray-900 mb-2 mt-4 border-b pb-2">Complaint Details</h3>
+                        <div class="grid md:grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                           <div><span class="text-gray-500">Fraud Type:</span> <strong id="review-complaintType" class="text-gray-800"></strong></div>
+                           <div><span class="text-gray-500">Total Amount Lost:</span> <strong id="review-TotalAmountLost" class="text-gray-800"></strong></div>
+                           <div><span class="text-gray-500">Date of Incident:</span> <strong id="review-complaintDate" class="text-gray-800"></strong></div>
+                           <div><span class="text-gray-500">Files Attached:</span> <strong id="review-files" class="text-gray-800"></strong></div>
+                           <div class="md:col-span-2"><span class="text-gray-500">Complaint Details:</span> <p id="review-complaintDetails" class="text-gray-800 font-medium whitespace-pre-wrap"></p></div>
+                           <div class="md:col-span-2"><span class="text-gray-500">Desired Resolution:</span> <p id="review-desiredResolution" class="text-gray-800 font-medium whitespace-pre-wrap"></p></div>
+                           <div class="md:col-span-2"><span class="text-gray-500">Contacted Bank/Institution:</span> <strong id="review-contactedBank" class="text-gray-800"></strong></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center mb-4">
+                    <input type="checkbox" id="confirm" name="Confirmation" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" required>
+                    <label for="confirm" class="ml-2 block text-sm text-gray-700">I confirm that the information provided is accurate to the best of my knowledge*</label>
+                </div>
+                <div id="confirm-error" class="error-message mb-4"></div>
+
+                <div class="flex justify-between pt-2">
+                    <button type="button" onclick="prevSection(3, 2)" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">Back</button>
+                    <!-- This button's type is changed to "submit" to allow the form to send -->
+                    <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Submit Complaint</button>
+                </div>
+            </div>
+
+            <!-- This section is now optional, as FormSubmit provides its own thank you page. -->
+            <!-- You can link back to this page from FormSubmit if you wish. -->
+            <div class="form-section" id="section4">
+                <div class="text-center py-10">
+                    <div class="confirmation-icon mx-auto w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">Complaint Submitted Successfully!</h2>
+                    <p class="text-gray-600 mb-6">Thank you for your feedback. We've received your complaint and will respond within 2 business days.</p>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Global progress tracking
+        let currentSection = 1;
+        const totalSections = 3;
+
+        // Overwrite the form's submit event to handle validation before sending
+        const complaintForm = document.getElementById('complaintForm');
+        complaintForm.addEventListener('submit', function(event) {
+            // Prevent the default form submission
+            event.preventDefault();
+            
+            // Run final validation on the review section
+            const confirmCheckbox = document.getElementById('confirm');
+            clearErrors();
+            if (!confirmCheckbox.checked) {
+                showError('confirm', 'Please confirm the information is accurate');
+                return; // Stop if not confirmed
+            }
+            
+            // If validation passes, submit the form programmatically
+            this.submit();
+        });
+        
+        // Navigation between sections
+        function nextSection(current, next) {
+            if (!validateSection(current)) return;
+            
+            document.getElementById(`section${current}`).classList.remove('active');
+            document.getElementById(`section${next}`).classList.add('active');
+            
+            const progressPercentage = ((next - 1) / (totalSections - 1)) * 100;
+            document.getElementById('progress-bar').style.width = `${progressPercentage}%`;
+            
+            document.querySelectorAll('.step').forEach((step, index) => {
+                if (index + 1 <= next) {
+                    step.querySelector('div').classList.remove('bg-gray-200', 'text-gray-600');
+                    step.querySelector('div').classList.add('bg-blue-500', 'text-white');
+                    step.querySelector('p').classList.remove('text-gray-500');
+                    step.querySelector('p').classList.add('text-blue-600', 'font-medium');
+                } else {
+                    step.querySelector('div').classList.add('bg-gray-200', 'text-gray-600');
+                    step.querySelector('div').classList.remove('bg-blue-500', 'text-white');
+                    step.querySelector('p').classList.add('text-gray-500');
+                    step.querySelector('p').classList.remove('text-blue-600', 'font-medium');
+                }
+            });
+            
+            currentSection = next;
+            window.scrollTo(0,0);
+            
+            if (next === 3) {
+                updateReviewSection();
+            }
+        }
+        
+        function prevSection(current, prev) {
+            document.getElementById(`section${current}`).classList.remove('active');
+            document.getElementById(`section${prev}`).classList.add('active');
+            
+            const progressPercentage = ((prev - 1) / (totalSections - 1)) * 100;
+            document.getElementById('progress-bar').style.width = `${progressPercentage}%`;
+            
+            document.querySelectorAll('.step').forEach((step, index) => {
+                if (index + 1 <= prev) {
+                    step.querySelector('div').classList.remove('bg-gray-200', 'text-gray-600');
+                    step.querySelector('div').classList.add('bg-blue-500', 'text-white');
+                    step.querySelector('p').classList.remove('text-gray-500');
+                    step.querySelector('p').classList.add('text-blue-600', 'font-medium');
+                } else {
+                    step.querySelector('div').classList.add('bg-gray-200', 'text-gray-600');
+                    step.querySelector('div').classList.remove('bg-blue-500', 'text-white');
+                    step.querySelector('p').classList.add('text-gray-500');
+                    step.querySelector('p').classList.remove('text-blue-600', 'font-medium');
+                }
+            });
+            
+            currentSection = prev;
+            window.scrollTo(0,0);
+        }
+        
+        function validateSection(section) {
+            let isValid = true;
+            clearErrors();
+            
+            if (section === 1) {
+                const requiredFields = ['firstName', 'lastName', 'email'];
+                requiredFields.forEach(id => {
+                    const field = document.getElementById(id);
+                    if (!field.value.trim()) {
+                        showError(id, `This field is required`);
+                        isValid = false;
+                    }
+                });
+
+                const email = document.getElementById('email');
+                if (email.value.trim() && !validateEmail(email.value.trim())) {
+                    showError('email', 'Please enter a valid email address');
+                    isValid = false;
+                }
+                
+                const phone = document.getElementById('phone');
+                if (phone.value.trim() && !validatePhone(phone.value.trim())) {
+                    showError('phone', 'Please enter a valid phone number');
+                    isValid = false;
+                }
+            }
+            
+            if (section === 2) {
+                const complaintType = document.getElementById('complaintType');
+                const complaintDate = document.getElementById('complaintDate');
+                const complaintDetails = document.getElementById('complaintDetails');
+                const paymentConfirmation = document.getElementById('paymentConfirmation');
+                const fileUpload = document.getElementById('file-upload');
+                
+                if (!complaintType.value) {
+                    showError('complaintType', 'Please select a fraud type');
+                    isValid = false;
+                }
+                
+                if (!complaintDate.value) {
+                    showError('complaintDate', 'Please select the date of incident');
+                    isValid = false;
+                } else {
+                    const selectedDate = new Date(complaintDate.value);
+                    const today = new Date();
+                    today.setHours(0,0,0,0);
+                    if (selectedDate > today) {
+                        showError('complaintDate', 'Date cannot be in the future');
+                        isValid = false;
+                    }
+                }
+                
+                if (complaintDetails.value.trim().length < 20) {
+                    showError('complaintDetails', 'Please provide more details (minimum 20 characters)');
+                    isValid = false;
+                }
+
+                if (!paymentConfirmation.checked) {
+                    showError('paymentConfirmation', 'Please confirm payment was made');
+                    isValid = false;
+                }
+                
+                if (fileUpload.files.length === 0) {
+                    showError('file-upload', 'Please upload proof of payment');
+                    isValid = false;
+                }
+            }
+            
+            return isValid;
+        }
+        
+        function showError(fieldId, message) {
+            const field = document.getElementById(fieldId);
+            const errorElement = document.getElementById(`${fieldId}-error`);
+            
+            field.classList.add('input-error');
+            errorElement.textContent = message;
+        }
+        
+        function clearErrors() {
+            document.querySelectorAll('[id$="-error"]').forEach(el => el.textContent = '');
+            document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+        }
+        
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+        
+        function validatePhone(phone) {
+            const re = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/;
+            return re.test(phone);
+        }
+        
+        function selectComplaintType(type) {
+            document.getElementById('complaintType').value = type;
+            document.querySelectorAll('.complaint-type-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent.trim() === type);
+            });
+        }
+        
+        function updateReviewSection() {
+            document.getElementById('review-name').textContent = `${document.getElementById('firstName').value} ${document.getElementById('lastName').value}`;
+            document.getElementById('review-email').textContent = document.getElementById('email').value;
+            document.getElementById('review-phone').textContent = document.getElementById('phone').value || 'N/A';
+            document.getElementById('review-age').textContent = document.getElementById('age').value || 'N/A';
+            document.getElementById('review-address').textContent = document.getElementById('address').value || 'N/A';
+            document.getElementById('review-city').textContent = document.getElementById('city').value || 'N/A';
+            document.getElementById('review-state').textContent = document.getElementById('state').value || 'N/A';
+            document.getElementById('review-zip').textContent = document.getElementById('zip').value || 'N/A';
+            
+            document.getElementById('review-complaintType').textContent = document.getElementById('complaintType').value;
+            document.getElementById('review-TotalAmountLost').textContent = document.getElementById('TotalAmountLost').value ? `$${document.getElementById('TotalAmountLost').value}` : 'N/A';
+            document.getElementById('review-complaintDate').textContent = formatDate(document.getElementById('complaintDate').value);
+            document.getElementById('review-complaintDetails').textContent = document.getElementById('complaintDetails').value;
+            document.getElementById('review-desiredResolution').textContent = document.getElementById('desiredResolution').value || 'Not specified';
+            document.getElementById('review-contactedBank').textContent = document.querySelector('input[name="Contacted Bank"]:checked').value;
+            document.getElementById('review-files').textContent = `${document.getElementById('file-upload').files.length} file(s) uploaded`; 
+        }
+        
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString(undefined, options);
+        }
+        
+        // No longer needed since the form has a submit button of type="submit"
+        // and we are using an event listener.
+        // function submitForm() { ... }
+        
+        function resetForm() {
+            document.getElementById('complaintForm').reset();
+            
+            document.querySelectorAll('.complaint-type-btn').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById('progress-bar').style.width = '33.33%';
+            document.querySelectorAll('.step').forEach((step, index) => {
+                const div = step.querySelector('div');
+                const p = step.querySelector('p');
+                if (index === 0) {
+                    div.className = 'w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold';
+                    p.className = 'text-xs mt-1 text-blue-600 font-medium';
+                } else {
+                    div.className = 'w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-600';
+                    p.className = 'text-xs mt-1 text-gray-500';
+                }
+            });
+            
+            clearErrors();
+            
+            // This is just in case a user navigates back to the page after submission
+            const confirmationSection = document.getElementById('section4');
+            if (confirmationSection && confirmationSection.classList.contains('active')) {
+                confirmationSection.classList.remove('active');
+            }
+            
+            document.getElementById('section1').classList.add('active');
+            currentSection = 1;
+            window.scrollTo(0,0);
+        }
+    </script>
+</body>
+</html>
