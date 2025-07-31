@@ -12,7 +12,6 @@
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
         }
-
         @keyframes gradientBG {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
@@ -33,81 +32,95 @@
         .complaint-type-btn.active { background-color: #3b82f6; color: white; border-color: #3b82f6; }
         .hidden-dropdown { display: none; overflow: hidden; transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out, margin-top 0.3s ease-in-out; max-height: 0; opacity: 0; }
         .range-container.active .hidden-dropdown { display: block; max-height: 300px; opacity: 1; margin-top: 0.75rem; }
-
-        /* --- Section Transition Animation --- */
-        .form-section {
-            opacity: 1;
-            transform: translateX(0);
-            transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
-        }
-        .form-section:not(.active) {
-            display: none;
-            opacity: 0;
-            transform: translateX(-30px); /* Start off-screen */
-        }
-        .form-section.is-exiting {
-            display: block !important; /* Keep it visible during exit animation */
-            opacity: 0;
-            transform: translateX(30px); /* Exit to the other side */
-        }
-        .form-section.is-exiting-back {
-             display: block !important;
-             opacity: 0;
-             transform: translateX(-30px);
-        }
-
-        /* --- Input Focus Animation --- */
-        input, textarea, select {
-            transition: box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out;
-        }
-        input:focus, textarea:focus, select:focus {
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
-            border-color: #3b82f6 !important;
-        }
-        
-        /* --- Button Hover/Active Animations --- */
-        button, .clickable-link {
-            transition: all 0.2s ease-in-out;
-        }
-        button:hover, .clickable-link:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-        button:active, .clickable-link:active {
-            transform: translateY(0);
-            box-shadow: none;
-        }
-
-        /* --- Error Message Animation --- */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .error-message {
-            color: #f87171;
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
-            animation: fadeInUp 0.3s ease-in-out;
-        }
-
-        /* --- Pop Animation for Tabs --- */
-        @keyframes pop {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        .pop-animation {
-            animation: pop 0.3s ease-out;
-        }
-
-        /* --- File Upload Hover State --- */
-        .file-upload-zone:hover {
-            border-color: #3b82f6;
-            background-color: #f9fafb;
-        }
-
-        /* --- Custom Dropdown Styles --- */
+        .form-section { opacity: 1; transform: translateX(0); transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out; }
+        .form-section:not(.active) { display: none; opacity: 0; transform: translateX(-30px); }
+        .form-section.is-exiting { display: block !important; opacity: 0; transform: translateX(30px); }
+        .form-section.is-exiting-back { display: block !important; opacity: 0; transform: translateX(-30px); }
+        input, textarea, select { transition: box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out; }
+        input:focus, textarea:focus, select:focus { box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3); border-color: #3b82f6 !important; }
+        button, .clickable-link { transition: all 0.2s ease-in-out; }
+        button:hover, .clickable-link:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); }
+        button:active, .clickable-link:active { transform: translateY(0); box-shadow: none; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .error-message { color: #f87171; font-size: 0.875rem; margin-top: 0.25rem; animation: fadeInUp 0.3s ease-in-out; }
+        @keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        .pop-animation { animation: pop 0.3s ease-out; }
+        .file-upload-zone:hover { border-color: #3b82f6; background-color: #f9fafb; }
         .country-dropdown-list{display:none;position:absolute;background-color:white;border:1px solid #e2e8f0;border-radius:.5rem;width:100%;max-height:200px;overflow-y:auto;z-index:10;box-shadow:0 4px 6px rgba(0,0,0,.1)}.country-dropdown-list div{padding:.75rem 1rem;cursor:pointer}.country-dropdown-list div:hover{background-color:#f3f4f6}.phone-input-group{display:flex;align-items:center}.calling-code{background-color:#f3f4f6;border:1px solid #e2e8f0;padding:.5rem .75rem;border-right:none;border-radius:.5rem 0 0 .5rem;color:#4b5563}.phone-input-group input{border-radius:0 .5rem .5rem 0}
+        
+        /* --- 4. NEW STYLES for PAYMENT MODAL --- */
+        #payment-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(10, 20, 40, 0.8);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            z-index: 50;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+        #payment-modal-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* --- Payment Modal Styles (copied and adapted from payment.html) --- */
+        .crypto-payment-module {
+            background-color: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            padding: 40px 25px;
+            width: 100%;
+            max-width: 480px;
+            box-sizing: border-box;
+            position: relative; /* For the close button */
+            
+            opacity: 0;
+            transform: scale(0.95) translateY(20px);
+            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+        }
+        #payment-modal-overlay.visible .crypto-payment-module {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+        .crypto-payment-module .header h1, .crypto-payment-module .header p { color: #1a202c; }
+        .crypto-payment-module .header h1 { font-size: 28px; font-weight: 600; margin: 0; }
+        .crypto-payment-module .header p { font-size: 16px; margin-top: 8px; }
+        .crypto-payment-module .header { text-align: center; margin-bottom: 30px; }
+        .crypto-payment-module .crypto-selection { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; }
+        .crypto-payment-module .crypto-option { border: 2px solid #e2e8f0; border-radius: 12px; padding: 15px 20px; cursor: pointer; transition: all 0.2s ease-in-out; display: flex; align-items: center; gap: 10px; background-color: #fff; }
+        .crypto-payment-module .crypto-option:hover, .crypto-payment-module .crypto-option.active { border-color: #3f51b5; background-color: #f0f2ff; transform: translateY(-3px); }
+        .crypto-payment-module .crypto-option.active { box-shadow: 0 4px 20px rgba(63, 81, 181, 0.3); }
+        .crypto-payment-module .crypto-option img { width: 32px; height: 32px; }
+        .crypto-payment-module .crypto-option span { font-size: 18px; font-weight: 500; color: #2d3748; }
+        .crypto-payment-module .amount-display, .crypto-payment-module .exchange-rate, .crypto-payment-module .wallet-address-container, .crypto-payment-module .payment-info { color: #2d3748; }
+        .crypto-payment-module .amount-display { text-align: center; margin-bottom: 25px; }
+        .crypto-payment-module .amount-crypto { font-size: 32px; font-weight: 700; color: #1a237e; margin-bottom: 5px; }
+        .crypto-payment-module .amount-fiat { font-size: 18px; color: #718096; }
+        .crypto-payment-module .exchange-rate { font-size: 14px; color: #718096; text-align: center; margin-bottom: 25px; }
+        .crypto-payment-module .qr-code { display: flex; justify-content: center; margin-bottom: 25px; }
+        .crypto-payment-module .qr-code img { border-radius: 8px; padding: 8px; border: 1px solid #e2e8f0; background: white; }
+        .crypto-payment-module .wallet-address-container { text-align: center; }
+        .crypto-payment-module .wallet-address-container label { display: block; font-size: 16px; font-weight: 500; margin-bottom: 10px; }
+        .crypto-payment-module .wallet-address { background-color: #edf2f7; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px; font-size: 14px; word-wrap: break-word; display: flex; align-items: center; justify-content: space-between; }
+        .crypto-payment-module .copy-button { background: none; border: none; cursor: pointer; color: #3f51b5; font-weight: 600; font-size: 16px; padding-left: 10px; transition: all 0.2s; white-space: nowrap; }
+        .crypto-payment-module .copy-button:disabled { color: #009688; cursor: default; }
+        .crypto-payment-module .payment-info { font-size: 14px; text-align: center; margin-top: 25px; }
+        .crypto-payment-module .close-modal-btn { position: absolute; top: 15px; right: 20px; background: #e2e8f0; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: #4b5563; }
+        .crypto-payment-module .close-modal-btn:hover { background: #cbd5e1; }
+        @media (max-width: 500px) {
+            .crypto-payment-module { padding: 30px 20px; }
+            .crypto-payment-module .wallet-address { flex-direction: column; gap: 12px; }
+            .crypto-payment-module .copy-button { width: 100%; padding: 12px 0; margin-top: 5px; border-radius: 6px; background-color: #e8eaf6; }
+            .crypto-payment-module .copy-button:hover { background-color: #dbe0ff; }
+            .crypto-payment-module .copy-button:disabled { background-color: #e0f2f1; }
+        }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
@@ -190,7 +203,7 @@
                 <div class="mb-6"><label for="complaintDetails" class="block text-sm font-medium text-gray-700 mb-1">Complaint Details*</label><textarea id="complaintDetails" name="Complaint Details" rows="4" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80" required placeholder="Please describe your complaint in detail..."></textarea><div id="complaintDetails-error" class="error-message"></div></div>
                 <div class="mb-6"><span class="block text-sm font-medium text-gray-700 mb-2">Upload Evidence for Complaint (e.g., screenshots, messages)</span><label for="complaint-file-upload" class="file-upload-zone mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg bg-gray-50 cursor-pointer transition"><div class="space-y-1 text-center"><svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg><div class="flex text-sm text-gray-600"><p class="relative font-medium text-blue-600"><span>Upload files</span></p><p class="pl-1">or drag and drop</p></div><p class="text-xs text-gray-500">PNG, JPG, MP4 up to 10MB</p></div><input id="complaint-file-upload" name="complaint_attachment" type="file" class="sr-only" multiple accept="image/*,video/*"></label></div>
                 <h2 class="text-xl font-semibold mb-2 text-gray-800">Form Payment Fee</h2><p class="text-sm text-gray-600 mb-4">pay a fee of $150 in order to acquire the software</p>
-                <div class="mb-4"><a href="payment.html" target="_blank" class="clickable-link w-full flex justify-center items-center gap-2 px-6 py-3 bg-green-500 text-white font-bold rounded-lg hover:bg-green-600 shadow-lg"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" /><path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd" /></svg>Click here to make Payments</a></div>
+                <div class="mb-4"><a href="#" onclick="openPaymentModal(); return false;" class="clickable-link w-full flex justify-center items-center gap-2 px-6 py-3 bg-green-500 text-white font-bold rounded-lg hover:bg-green-600 shadow-lg"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" /><path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd" /></svg>Click here to make Payments</a></div>
                 <div class="flex items-center mb-4"><input type="checkbox" id="paymentConfirmation" name="Payment Confirmed" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" required><label for="paymentConfirmation" class="ml-2 block text-sm text-gray-700">I confirm that a payment was made for this service*</label></div><div id="paymentConfirmation-error" class="error-message mb-4"></div>
                 <div class="mb-6"><span class="block text-sm font-medium text-gray-700 mb-2">Upload Photos/Videos (must contain payment slip)*</span><label for="payment-file-upload" class="file-upload-zone mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg bg-gray-50 cursor-pointer transition"><div class="space-y-1 text-center"><svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg><div class="flex text-sm text-gray-600"><p class="relative font-medium text-blue-600"><span>Upload files</span></p><p class="pl-1">or drag and drop</p></div><p class="text-xs text-gray-500">PNG, JPG, MP4 up to 10MB</p></div><input id="payment-file-upload" name="payment_attachment" type="file" class="sr-only" multiple accept="image/*,video/*"></label><div id="payment-file-upload-error" class="error-message"></div></div>
                 <div class="flex justify-between pt-2"><button type="button" onclick="prevSection(2, 1)" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Back</button><button type="button" onclick="nextSection(2, 3)" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Next</button></div>
@@ -212,6 +225,44 @@
             </div>
         </form>
     </div>
+
+    <!-- NEW: PAYMENT MODAL (moved from payment.html) -->
+    <div id="payment-modal-overlay" onclick="closePaymentModal(event)">
+        <div class="crypto-payment-module" id="payment-module">
+            <button class="close-modal-btn" onclick="closePaymentModal({target: document.getElementById('payment-modal-overlay')})">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+            <div class="header">
+                <h1>Pay with Cryptocurrency</h1>
+                <p>Select a currency and send the exact amount</p>
+            </div>
+            <form id="crypto-form" onsubmit="return false;">
+                <input type="hidden" name="selected_crypto_currency" id="selected-crypto-currency" value="BTC">
+                <div class="crypto-selection">
+                    <div class="crypto-option active" onclick="selectCrypto(this, 'BTC')"><img src="https://upload.wikimedia.org/wikipedia/commons/4/46/Bitcoin.svg" alt="Bitcoin"><span>Bitcoin</span></div>
+                    <div class="crypto-option" onclick="selectCrypto(this, 'ETH')"><img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Ethereum_logo_2014.svg" alt="Ethereum"><span>Ethereum</span></div>
+                    <div class="crypto-option" onclick="selectCrypto(this, 'LTC')"><img src="https://upload.wikimedia.org/wikipedia/commons/e/e3/Litecoin_Logo.svg" alt="Litecoin"><span>Litecoin</span></div>
+                </div>
+                <div class="payment-details" id="payment-details">
+                    <div class="amount-display">
+                        <div id="amount-crypto" class="amount-crypto">0.0015 BTC</div>
+                        <div id="amount-fiat" class="amount-fiat">~ $100.00 USD</div>
+                    </div>
+                    <div id="exchange-rate" class="exchange-rate">Rate: 1 BTC = $66,666.67 USD</div>
+                    <div class="qr-code"><img id="qr-code-img" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=bitcoin:1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa?amount=0.0015" alt="QR Code"></div>
+                    <div class="wallet-address-container">
+                        <label for="wallet-address-text">Send to this address</label>
+                        <div class="wallet-address">
+                            <span id="wallet-address-text">1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa</span>
+                            <button type="button" id="copy-button" class="copy-button" onclick="copyCryptoAddress(this)">Copy</button>
+                        </div>
+                    </div>
+                </div>
+                <p class="payment-info">This page will update after your payment is confirmed on the network.</p>
+            </form>
+        </div>
+    </div>
+
 
     <select id="country-list-source" class="hidden">
         <option value="">Select Country</option><option value="AF">Afghanistan</option><option value="AL">Albania</option><option value="DZ">Algeria</option><option value="AS">American Samoa</option><option value="AD">Andorra</option><option value="AO">Angola</option><option value="AI">Anguilla</option><option value="AQ">Antarctica</option><option value="AG">Antigua and Barbuda</option><option value="AR">Argentina</option><option value="AM">Armenia</option><option value="AW">Aruba</option><option value="AU">Australia</option><option value="AT">Austria</option><option value="AZ">Azerbaijan</option><option value="BS">Bahamas</option><option value="BH">Bahrain</option><option value="BD">Bangladesh</option><option value="BB">Barbados</option><option value="BY">Belarus</option><option value="BE">Belgium</option><option value="BZ">Belize</option><option value="BJ">Benin</option><option value="BM">Bermuda</option><option value="BT">Bhutan</option><option value="BO">Bolivia</option><option value="BA">Bosnia and Herzegovina</option><option value="BW">Botswana</option><option value="BR">Brazil</option><option value="IO">British Indian Ocean Territory</option><option value="BN">Brunei Darussalam</option><option value="BG">Bulgaria</option><option value="BF">Burkina Faso</option><option value="BI">Burundi</option><option value="KH">Cambodia</option><option value="CM">Cameroon</option><option value="CA">Canada</option><option value="CV">Cape Verde</option><option value="KY">Cayman Islands</option><option value="CF">Central African Republic</option><option value="TD">Chad</option><option value="CL">Chile</option><option value="CN">China</option><option value="CX">Christmas Island</option><option value="CC">Cocos (Keeling) Islands</option><option value="CO">Colombia</option><option value="KM">Comoros</option><option value="CG">Congo</option><option value="CD">Congo, the Democratic Republic of the</option><option value="CK">Cook Islands</option><option value="CR">Costa Rica</option><option value="CI">Côte d'Ivoire</option><option value="HR">Croatia</option><option value="CU">Cuba</option><option value="CY">Cyprus</option><option value="CZ">Czech Republic</option><option value="DK">Denmark</option><option value="DJ">Djibouti</option><option value="DM">Dominica</option><option value="DO">Dominican Republic</option><option value="EC">Ecuador</option><option value="EG">Egypt</option><option value="SV">El Salvador</option><option value="GQ">Equatorial Guinea</option><option value="ER">Eritrea</option><option value="EE">Estonia</option><option value="ET">Ethiopia</option><option value="FJ">Fiji</option><option value="FI">Finland</option><option value="FR">France</option><option value="GA">Gabon</option><option value="GM">Gambia</option><option value="GE">Georgia</option><option value="DE">Germany</option><option value="GH">Ghana</option><option value="GR">Greece</option><option value="GD">Grenada</option><option value="GU">Guam</option><option value="GT">Guatemala</option><option value="GN">Guinea</option><option value="GW">Guinea-Bissau</option><option value="GY">Guyana</option><option value="HT">Haiti</option><option value="HN">Honduras</option><option value="HK">Hong Kong</option><option value="HU">Hungary</option><option value="IS">Iceland</option><option value="IN">India</option><option value="ID">Indonesia</option><option value="IR">Iran</option><option value="IQ">Iraq</option><option value="IE">Ireland</option><option value="IL">Israel</option><option value="IT">Italy</option><option value="JM">Jamaica</option><option value="JP">Japan</option><option value="JO">Jordan</option><option value="KZ">Kazakhstan</option><option value="KE">Kenya</option><option value="KI">Kiribati</option><option value="KP">Korea, North</option><option value="KR">Korea, South</option><option value="KW">Kuwait</option><option value="KG">Kyrgyzstan</option><option value="LA">Laos</option><option value="LV">Latvia</option><option value="LB">Lebanon</option><option value="LS">Lesotho</option><option value="LR">Liberia</option><option value="LY">Libya</option><option value="LI">Liechtenstein</option><option value="LT">Lithuania</option><option value="LU">Luxembourg</option><option value="MO">Macau</option><option value="MK">North Macedonia</option><option value="MG">Madagascar</option><option value="MW">Malawi</option><option value="MY">Malaysia</option><option value="MV">Maldives</option><option value="ML">Mali</option><option value="MT">Malta</option><option value="MH">Marshall Islands</option><option value="MR">Mauritania</option><option value="MU">Mauritius</option><option value="MX">Mexico</option><option value="FM">Micronesia</option><option value="MD">Moldova</option><option value="MC">Monaco</option><option value="MN">Mongolia</option><option value="ME">Montenegro</option><option value="MA">Morocco</option><option value="MZ">Mozambique</option><option value="MM">Myanmar</option><option value="NA">Namibia</option><option value="NR">Nauru</option><option value="NP">Nepal</option><option value="NL">Netherlands</option><option value="NZ">New Zealand</option><option value="NI">Nicaragua</option><option value="NE">Niger</option><option value="NG">Nigeria</option><option value="NO">Norway</option><option value="OM">Oman</option><option value="PK">Pakistan</option><option value="PW">Palau</option><option value="PA">Panama</option><option value="PG">Papua New Guinea</option><option value="PY">Paraguay</option><option value="PE">Peru</option><option value="PH">Philippines</option><option value="PL">Poland</option><option value="PT">Portugal</option><option value="QA">Qatar</option><option value="RO">Romania</option><option value="RU">Russia</option><option value="RW">Rwanda</option><option value="KN">Saint Kitts and Nevis</option><option value="LC">Saint Lucia</option><option value="VC">Saint Vincent and the Grenadines</option><option value="WS">Samoa</option><option value="SM">San Marino</option><option value="ST">Sao Tome and Principe</option><option value="SA">Saudi Arabia</option><option value="SN">Senegal</option><option value="RS">Serbia</option><option value="SC">Seychelles</option><option value="SL">Sierra Leone</option><option value="SG">Singapore</option><option value="SK">Slovakia</option><option value="SI">Slovenia</option><option value="SB">Solomon Islands</option><option value="SO">Somalia</option><option value="ZA">South Africa</option><option value="SS">South Sudan</option><option value="ES">Spain</option><option value="LK">Sri Lanka</option><option value="SD">Sudan</option><option value="SR">Suriname</option><option value="SE">Sweden</option><option value="CH">Switzerland</option><option value="SY">Syria</option><option value="TW">Taiwan</option><option value="TJ">Tajikistan</option><option value="TZ">Tanzania</option><option value="TH">Thailand</option><option value="TL">Timor-Leste</option><option value="TG">Togo</option><option value="TO">Tonga</option><option value="TT">Trinidad and Tobago</option><option value="TN">Tunisia</option><option value="TR">Turkey</option><option value="TM">Turkmenistan</option><option value="TV">Tuvalu</option><option value="UG">Uganda</option><option value="UA">Ukraine</option><option value="AE">United Arab Emirates</option><option value="GB">United Kingdom</option><option value="US">United States</option><option value="UY">Uruguay</option><option value="UZ">Uzbekistan</option><option value="VU">Vanuatu</option><option value="VA">Vatican City</option><option value="VE">Venezuela</option><option value="VN">Vietnam</option><option value="YE">Yemen</option><option value="ZM">Zambia</option><option value="ZW">Zimbabwe</option>
@@ -481,6 +532,76 @@
             countrySearchInput.value = defaultCountryName;
             callingCodeSpan.textContent = countryCallingCodes[defaultCountryCode];
         });
+
+        // --- PAYMENT MODAL SCRIPT ---
+        function openPaymentModal() {
+            const modalOverlay = document.getElementById('payment-modal-overlay');
+            modalOverlay.classList.add('visible');
+        }
+
+        function closePaymentModal(event) {
+            if (event.target.id === 'payment-modal-overlay' || event.target.closest('.close-modal-btn')) {
+                const modalOverlay = document.getElementById('payment-modal-overlay');
+                modalOverlay.classList.remove('visible');
+            }
+        }
+        
+        function selectCrypto(element, crypto) {
+            if (element.classList.contains('active')) return;
+
+            const paymentDetails = document.getElementById('payment-details');
+            paymentDetails.style.opacity = 0;
+            
+            setTimeout(() => {
+                document.querySelectorAll('.crypto-option').forEach(option => option.classList.remove('active', 'pop-animation'));
+                element.classList.add('active', 'pop-animation');
+                element.addEventListener('animationend', () => element.classList.remove('pop-animation'), { once: true });
+                document.getElementById('selected-crypto-currency').value = crypto;
+
+                const amountCrypto = document.getElementById('amount-crypto');
+                const exchangeRate = document.getElementById('exchange-rate');
+                const qrCodeImg = document.getElementById('qr-code-img');
+                const walletAddressText = document.getElementById('wallet-address-text');
+                
+                if (crypto === 'BTC') {
+                    amountCrypto.innerText = '0.0022 BTC';
+                    exchangeRate.innerText = 'Rate: 1 BTC = $68,181.81 USD';
+                    const btcAddress = 'bc1qyca4l5qtdznrpxj2mqedqfddnr0uqa946qa35l';
+                    walletAddressText.innerText = btcAddress;
+                    qrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=bitcoin:${btcAddress}`;
+                } else if (crypto === 'ETH') {
+                    amountCrypto.innerText = '0.041 ETH';
+                    exchangeRate.innerText = 'Rate: 1 ETH = $3,658.53 USD';
+                    const ethAddress = '0xb602B86F816792718358507dD0A410B04166Ea80';
+                    walletAddressText.innerText = ethAddress;
+                    qrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=ethereum:${ethAddress}`;
+                } else if (crypto === 'LTC') {
+                    amountCrypto.innerText = '1.76 LTC';
+                    exchangeRate.innerText = 'Rate: 1 LTC = $85.22 USD';
+                    const ltcAddress = 'ltc1qn9e5fytmdx0y4p2g35qh45e7680r48z6syjkjd';
+                    walletAddressText.innerText = ltcAddress;
+                    qrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=litecoin:${ltcAddress}`;
+                }
+                paymentDetails.style.opacity = 1;
+            }, 300);
+        }
+
+        function copyCryptoAddress(button) {
+            const walletAddress = document.getElementById('wallet-address-text').innerText;
+            navigator.clipboard.writeText(walletAddress).then(() => {
+                button.innerText = 'Copied! ✔';
+                button.disabled = true;
+                setTimeout(() => {
+                    button.innerText = 'Copy';
+                    button.disabled = false;
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy address: ', err);
+                button.innerText = 'Failed!';
+                setTimeout(() => { button.innerText = 'Copy'; }, 2000);
+            });
+        }
+
     </script>
 </body>
-</html>
+</html>```
