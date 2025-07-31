@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Complaint Form</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* --- 1. Amazing Animated Background --- */
+        body {
+            background: linear-gradient(-45deg, #1a237e, #3f51b5, #009688, #283593);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* --- 2. Glassmorphism effect for the form container --- */
+        .form-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        /* --- 3. Standard and New Animation Styles --- */
+        .input-error { border-color: #f87171; }
+        .complaint-type-btn { transition: all 0.2s ease-in-out; }
+        .complaint-type-btn.active { background-color: #3b82f6; color: white; border-color: #3b82f6; }
+        .hidden-dropdown { display: none; overflow: hidden; transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out, margin-top 0.3s ease-in-out; max-height: 0; opacity: 0; }
+        .range-container.active .hidden-dropdown { display: block; max-height: 300px; opacity: 1; margin-top: 0.75rem; }
+
+        /* --- Section Transition Animation --- */
+        .form-section {
+            opacity: 1;
+            transform: translateX(0);
+            transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+        }
+        .form-section:not(.active) {
+            display: none;
+            opacity: 0;
+            transform: translateX(-30px); /* Start off-screen */
+        }
+        .form-section.is-exiting {
+            display: block !important; /* Keep it visible during exit animation */
+            opacity: 0;
+            transform: translateX(30px); /* Exit to the other side */
+        }
+        .form-section.is-exiting-back {
+             display: block !important;
+             opacity: 0;
+             transform: translateX(-30px);
+        }
+
+        /* --- Input Focus Animation --- */
+        input, textarea, select {
+            transition: box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out;
+        }
+        input:focus, textarea:focus, select:focus {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+            border-color: #3b82f6 !important;
+        }
+        
+        /* --- Button Hover/Active Animations --- */
+        button, .clickable-link {
+            transition: all 0.2s ease-in-out;
+        }
+        button:hover, .clickable-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        button:active, .clickable-link:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+
+        /* --- Error Message Animation --- */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .error-message {
+            color: #f87171;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            animation: fadeInUp 0.3s ease-in-out;
+        }
+
+        /* --- Pop Animation for Tabs --- */
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .pop-animation {
+            animation: pop 0.3s ease-out;
+        }
+
+        /* --- File Upload Hover State --- */
+        .file-upload-zone:hover {
+            border-color: #3b82f6;
+            background-color: #f9fafb;
+        }
+
+        /* --- Custom Dropdown Styles --- */
+        .country-dropdown-list{display:none;position:absolute;background-color:white;border:1px solid #e2e8f0;border-radius:.5rem;width:100%;max-height:200px;overflow-y:auto;z-index:10;box-shadow:0 4px 6px rgba(0,0,0,.1)}.country-dropdown-list div{padding:.75rem 1rem;cursor:pointer}.country-dropdown-list div:hover{background-color:#f3f4f6}.phone-input-group{display:flex;align-items:center}.calling-code{background-color:#f3f4f6;border:1px solid #e2e8f0;padding:.5rem .75rem;border-right:none;border-radius:.5rem 0 0 .5rem;color:#4b5563}.phone-input-group input{border-radius:0 .5rem .5rem 0}
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-3xl rounded-xl shadow-2xl overflow-hidden form-container">
+        <!-- Form Header -->
+        <div class="bg-blue-600 p-6 text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold">Customer Complaint Form</h1>
+                    <p class="text-blue-100">Your feedback helps us improve our services</p>
+                </div>
+                <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Steps -->
+        <div class="px-6 pt-4 pb-2">
+            <div class="flex justify-between items-center relative">
+                <div class="absolute top-1/2 left-0 w-full h-1 bg-gray-200 -z-10"></div>
+                <div id="progress-bar" class="absolute top-1/2 left-0 h-1 bg-blue-500 -z-10 transition-all duration-500 ease-in-out" style="width: 33.33%"></div>
+                <div class="step flex flex-col items-center relative"><div class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold">1</div><p class="text-xs mt-1 text-blue-600 font-medium">Personal Info</p></div>
+                <div class="step flex flex-col items-center"><div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-600">2</div><p class="text-xs mt-1 text-gray-500">Complaint Details</p></div>
+                <div class="step flex flex-col items-center"><div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-600">3</div><p class="text-xs mt-1 text-gray-500">Review</p></div>
+            </div>
+        </div>
+
+        <form id="complaintForm" class="p-6 space-y-6" action="https://formsubmit.co/62be0756c8446a1bbab6b3b06d67208f" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="_next" value="https://pcs1s.github.io/PrivateCybersecurityServices/"><input type="hidden" name="_subject" value="New Complaint Submitted!">
+
+            <!-- Section 1: Personal Information -->
+            <div class="form-section active" id="section1">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">Personal Information</h2>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div><label for="firstName" class="block text-sm font-medium text-gray-700 mb-1">First Name*</label><input type="text" id="firstName" name="First Name" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80" required><div id="firstName-error" class="error-message"></div></div>
+                    <div><label for="lastName" class="block text-sm font-medium text-gray-700 mb-1">Last Name*</label><input type="text" id="lastName" name="Last Name" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80" required><div id="lastName-error" class="error-message"></div></div>
+                </div>
+                <div><label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address*</label><input type="email" id="email" name="Email" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80" required><div id="email-error" class="error-message"></div></div>
+                
+                <div>
+                    <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                    <div class="phone-input-group">
+                        <span id="calling-code" class="calling-code">+1</span>
+                        <input type="tel" id="phone" name="Phone" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80">
+                    </div>
+                    <div id="phone-error" class="error-message"></div>
+                </div>
+
+                <div><label for="age" class="block text-sm font-medium text-gray-700 mb-1">Age</label><input type="number" id="age" name="Age" min="18" max="120" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"></div>
+                
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="relative">
+                        <label for="countrySearch" class="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                        <input type="text" id="countrySearch" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80" placeholder="Search for a country...">
+                        <input type="hidden" id="country" name="Country">
+                        <div id="countryDropdown" class="country-dropdown-list"></div>
+                    </div>
+                    <div><label for="state" class="block text-sm font-medium text-gray-700 mb-1">State/Province</label><input type="text" id="state" name="State" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"></div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div><label for="city" class="block text-sm font-medium text-gray-700 mb-1">City</label><input type="text" id="city" name="City" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"></div>
+                    <div><label for="county" class="block text-sm font-medium text-gray-700 mb-1">County</label><input type="text" id="county" name="County" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"></div>
+                </div>
+                <div><label for="address" class="block text-sm font-medium text-gray-700 mb-1">Street Address</label><input type="text" id="address" name="Address" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"></div>
+                <div><label for="zip" class="block text-sm font-medium text-gray-700 mb-1">zip code</label><input type="text" id="zip" name="ZIP Code" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"></div>
+                <div class="flex justify-end pt-4"><button type="button" onclick="nextSection(1, 2)" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Next</button></div>
+            </div>
+
+            <!-- Section 2: Complaint Details -->
+            <div class="form-section" id="section2">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">Complaint Details</h2>
+                <div class="mb-6"><label for="complaintDate" class="block text-sm font-medium text-gray-700 mb-1">Date Filled*</label><input type="date" id="complaintDate" name="Date Filled" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80" required><div id="complaintDate-error" class="error-message"></div></div>
+                <div class="form-group mb-4"><label class="block text-sm font-medium text-gray-700 mb-2">Were you the one affected in this incident?</label><div class="flex gap-4"><div class="flex items-center"><input type="radio" id="affectedYes" name="Affected" value="yes" class="h-4 w-4 text-blue-600 border-gray-300"><label for="affectedYes" class="ml-2 block text-sm text-gray-900">Yes</label></div><div class="flex items-center"><input type="radio" id="affectedNo" name="Affected" value="no" checked class="h-4 w-4 text-blue-600 border-gray-300"><label for="affectedNo" class="ml-2 block text-sm text-gray-900">No</label></div></div></div>
+                <div class="form-group mb-6"><label class="block text-sm font-medium text-gray-700 mb-2">Did you contact your bank, financial institution, or Crypto Money Exchange?</label><div class="flex gap-4"><div class="flex items-center"><input type="radio" id="contactedBankYes" name="Contacted Bank" value="yes" class="h-4 w-4 text-blue-600 border-gray-300"><label for="contactedBankYes" class="ml-2 block text-sm text-gray-900">Yes</label></div><div class="flex items-center"><input type="radio" id="contactedBankNo" name="Contacted Bank" value="no" checked class="h-4 w-4 text-blue-600 border-gray-300"><label for="contactedBankNo" class="ml-2 block text-sm text-gray-900">No</label></div></div></div>
+                <div class="mb-6"><label class="block text-sm font-medium text-gray-700 mb-2">Fraud Type*</label><div class="grid grid-cols-2 md:grid-cols-3 gap-2"><button type="button" onclick="selectComplaintType(this, 'Crypto Scam')" class="complaint-type-btn px-4 py-2 border rounded-lg text-sm">Crypto Scam</button><button type="button" onclick="selectComplaintType(this, 'Dating and Romance Scam')" class="complaint-type-btn px-4 py-2 border rounded-lg text-sm">Dating and Romance Scam</button><button type="button" onclick="selectComplaintType(this, 'Investment Scam')" class="complaint-type-btn px-4 py-2 border rounded-lg text-sm">Investment Scam</button><button type="button" onclick="selectComplaintType(this, 'Identity Theft')" class="complaint-type-btn px-4 py-2 border rounded-lg text-sm">Identity Theft</button><button type="button" onclick="selectComplaintType(this, 'Hack or Fishing Link')" class="complaint-type-btn px-4 py-2 border rounded-lg text-sm">Hack or Fishing Link</button><button type="button" onclick="selectComplaintType(this, 'Other')" class="complaint-type-btn px-4 py-2 border rounded-lg text-sm">Other</button></div><input type="hidden" id="complaintType" name="Fraud Type" required><div id="complaintType-error" class="error-message"></div></div>
+                <div class="mb-6"><label for="TotalAmountLost" class="block text-sm font-medium text-gray-700 mb-1">Total Amount Lost (Exact Amount)</label><input type="number" id="TotalAmountLost" name="Total Amount Lost" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"></div>
+                <div class="mb-6"><label class="block text-sm font-medium text-gray-700 mb-2">Method of Loss</label><div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="amount-range-container"><div class="range-container"><button type="button" onclick="toggleAmountRange(this, 'Crypto Type')" class="complaint-type-btn w-full text-center py-2 border rounded-lg text-sm">Crypto Type</button><div class="hidden-dropdown space-y-2"><input type="text" placeholder="Wallet Address" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"><input type="text" placeholder="Transaction ID" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"><input type="text" placeholder="Amount" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"></div></div><div class="range-container"><button type="button" onclick="toggleAmountRange(this, 'Bank')" class="complaint-type-btn w-full text-center py-2 border rounded-lg text-sm">Bank</button><div class="hidden-dropdown space-y-2"><input type="text" placeholder="Bank Name" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"><input type="text" placeholder="Account Number" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"><input type="text" placeholder="amount" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"></div></div><div class="range-container"><button type="button" onclick="toggleAmountRange(this, 'Gift Card')" class="complaint-type-btn w-full text-center py-2 border rounded-lg text-sm">Gift Card</button><div class="hidden-dropdown space-y-2"><input type="text" placeholder="Card Type (e.g., Amazon)" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"><input type="text" placeholder="Card Number" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"><input type="text" placeholder="amount" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"></div></div><div class="range-container"><button type="button" onclick="toggleAmountRange(this, 'P2P')" class="complaint-type-btn w-full text-center py-2 border rounded-lg text-sm">P2P</button><div class="hidden-dropdown space-y-2"><input type="text" placeholder="( e.g PayPal, cashapp, e.t.c)" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"><input type="text" placeholder="tag/email" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"><input type="text" placeholder="amount" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"></div></div></div><input type="hidden" id="methodOfLoss" name="Method of Loss"><input type="hidden" id="methodOfLossField1" name="Method of Loss Field 1"><input type="hidden" id="methodOfLossField2" name="Method of Loss Field 2"><input type="hidden" id="methodOfLossField3" name="Method of Loss Field 3"></div>
+                <div class="mb-6"><label for="complaintDetails" class="block text-sm font-medium text-gray-700 mb-1">Complaint Details*</label><textarea id="complaintDetails" name="Complaint Details" rows="4" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80" required placeholder="Please describe your complaint in detail..."></textarea><div id="complaintDetails-error" class="error-message"></div></div>
+                <div class="mb-6"><span class="block text-sm font-medium text-gray-700 mb-2">Upload Evidence for Complaint (e.g., screenshots, messages)</span><label for="complaint-file-upload" class="file-upload-zone mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg bg-gray-50 cursor-pointer transition"><div class="space-y-1 text-center"><svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg><div class="flex text-sm text-gray-600"><p class="relative font-medium text-blue-600"><span>Upload files</span></p><p class="pl-1">or drag and drop</p></div><p class="text-xs text-gray-500">PNG, JPG, MP4 up to 10MB</p></div><input id="complaint-file-upload" name="complaint_attachment" type="file" class="sr-only" multiple accept="image/*,video/*"></label></div>
+                <h2 class="text-xl font-semibold mb-2 text-gray-800">Form Payment Fee</h2><p class="text-sm text-gray-600 mb-4">pay a fee of $150 in order to acquire the software</p>
+                <div class="mb-4"><a href="payment.html" target="_blank" class="clickable-link w-full flex justify-center items-center gap-2 px-6 py-3 bg-green-500 text-white font-bold rounded-lg hover:bg-green-600 shadow-lg"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" /><path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd" /></svg>Click here to make Payments</a></div>
+                <div class="flex items-center mb-4"><input type="checkbox" id="paymentConfirmation" name="Payment Confirmed" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" required><label for="paymentConfirmation" class="ml-2 block text-sm text-gray-700">I confirm that a payment was made for this service*</label></div><div id="paymentConfirmation-error" class="error-message mb-4"></div>
+                <div class="mb-6"><span class="block text-sm font-medium text-gray-700 mb-2">Upload Photos/Videos (must contain payment slip)*</span><label for="payment-file-upload" class="file-upload-zone mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg bg-gray-50 cursor-pointer transition"><div class="space-y-1 text-center"><svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg><div class="flex text-sm text-gray-600"><p class="relative font-medium text-blue-600"><span>Upload files</span></p><p class="pl-1">or drag and drop</p></div><p class="text-xs text-gray-500">PNG, JPG, MP4 up to 10MB</p></div><input id="payment-file-upload" name="payment_attachment" type="file" class="sr-only" multiple accept="image/*,video/*"></label><div id="payment-file-upload-error" class="error-message"></div></div>
+                <div class="flex justify-between pt-2"><button type="button" onclick="prevSection(2, 1)" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Back</button><button type="button" onclick="nextSection(2, 3)" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Next</button></div>
+            </div>
+
+            <!-- Section 3: Review & Submit -->
+            <div class="form-section" id="section3">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">Review Your Complaint</h2>
+                <div class="bg-gray-50 p-4 rounded-lg mb-6 space-y-4">
+                    <div><h3 class="font-medium text-gray-900 mb-2 border-b pb-2">Personal Information</h3><div class="grid md:grid-cols-2 gap-x-4 gap-y-2 text-sm"><div><span class="text-gray-500">Name:</span> <strong id="review-name" class="text-gray-800"></strong></div><div><span class="text-gray-500">Email:</span> <strong id="review-email" class="text-gray-800"></strong></div><div><span class="text-gray-500">Phone:</span> <strong id="review-phone" class="text-gray-800"></strong></div><div><span class="text-gray-500">Age:</span> <strong id="review-age" class="text-gray-800"></strong></div><div class="md:col-span-2"><span class="text-gray-500">Address:</span> <strong id="review-address" class="text-gray-800"></strong></div><div><span class="text-gray-500">City:</span> <strong id="review-city" class="text-gray-800"></strong></div><div><span class="text-gray-500">State:</span> <strong id="review-state" class="text-gray-800"></strong></div><div><span class="text-gray-500">Zip Code:</span> <strong id="review-zip" class="text-gray-800"></strong></div></div></div>
+                    <div><h3 class="font-medium text-gray-900 mb-2 mt-4 border-b pb-2">Complaint Details</h3><div class="grid md:grid-cols-2 gap-x-4 gap-y-2 text-sm"><div><span class="text-gray-500">Date Filled:</span> <strong id="review-complaintDate" class="text-gray-800"></strong></div><div><span class="text-gray-500">Fraud Type:</span> <strong id="review-complaintType" class="text-gray-800"></strong></div><div><span class="text-gray-500">Amount Lost (Exact):</span> <strong id="review-TotalAmountLost" class="text-gray-800"></strong></div><div class="md:col-span-2"><span class="text-gray-500">Method of Loss:</span> <strong id="review-methodOfLoss" class="text-gray-800"></strong></div><div><span class="text-gray-500">Detail 1:</span> <strong id="review-methodOfLossField1" class="text-gray-800"></strong></div><div><span class="text-gray-500">Detail 2:</span> <strong id="review-methodOfLossField2" class="text-gray-800"></strong></div><div><span class="text-gray-500">Detail 3:</span> <strong id="review-methodOfLossField3" class="text-gray-800"></strong></div><div class="md:col-span-2"><span class="text-gray-500">Complaint Details:</span> <p id="review-complaintDetails" class="text-gray-800 font-medium whitespace-pre-wrap"></p></div><div><span class="text-gray-500">Complaint Evidence:</span> <strong id="review-complaint-files" class="text-gray-800"></strong></div><div><span class="text-gray-500">Payment Slip(s):</span> <strong id="review-payment-files" class="text-gray-800"></strong></div><div class="md:col-span-2"><span class="text-gray-500">Contacted Bank/Institution:</span> <strong id="review-contactedBank" class="text-gray-800"></strong></div></div></div>
+                </div>
+                <div class="flex items-center mb-4"><input type="checkbox" id="confirm" name="Confirmation" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" required><label for="confirm" class="ml-2 block text-sm text-gray-700">I confirm that the information provided is accurate to the best of my knowledge*</label></div><div id="confirm-error" class="error-message mb-4"></div>
+                <div class="flex justify-between pt-2"><button type="button" onclick="prevSection(3, 2)" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Back</button><button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Submit Complaint</button></div>
+            </div>
+
+            <div class="form-section" id="section4">
+                <div class="text-center py-10"><div class="confirmation-icon mx-auto w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-6"><svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg></div><h2 class="text-2xl font-bold text-gray-800 mb-2">Complaint Submitted Successfully!</h2><p class="text-gray-600 mb-6">Thank you for your feedback. We've received your complaint and will respond within 2 business days.</p></div>
+            </div>
+        </form>
+    </div>
+
+    <select id="country-list-source" class="hidden">
+        <option value="">Select Country</option><option value="AF">Afghanistan</option><option value="AL">Albania</option><option value="DZ">Algeria</option><option value="AS">American Samoa</option><option value="AD">Andorra</option><option value="AO">Angola</option><option value="AI">Anguilla</option><option value="AQ">Antarctica</option><option value="AG">Antigua and Barbuda</option><option value="AR">Argentina</option><option value="AM">Armenia</option><option value="AW">Aruba</option><option value="AU">Australia</option><option value="AT">Austria</option><option value="AZ">Azerbaijan</option><option value="BS">Bahamas</option><option value="BH">Bahrain</option><option value="BD">Bangladesh</option><option value="BB">Barbados</option><option value="BY">Belarus</option><option value="BE">Belgium</option><option value="BZ">Belize</option><option value="BJ">Benin</option><option value="BM">Bermuda</option><option value="BT">Bhutan</option><option value="BO">Bolivia</option><option value="BA">Bosnia and Herzegovina</option><option value="BW">Botswana</option><option value="BR">Brazil</option><option value="IO">British Indian Ocean Territory</option><option value="BN">Brunei Darussalam</option><option value="BG">Bulgaria</option><option value="BF">Burkina Faso</option><option value="BI">Burundi</option><option value="KH">Cambodia</option><option value="CM">Cameroon</option><option value="CA">Canada</option><option value="CV">Cape Verde</option><option value="KY">Cayman Islands</option><option value="CF">Central African Republic</option><option value="TD">Chad</option><option value="CL">Chile</option><option value="CN">China</option><option value="CX">Christmas Island</option><option value="CC">Cocos (Keeling) Islands</option><option value="CO">Colombia</option><option value="KM">Comoros</option><option value="CG">Congo</option><option value="CD">Congo, the Democratic Republic of the</option><option value="CK">Cook Islands</option><option value="CR">Costa Rica</option><option value="CI">Côte d'Ivoire</option><option value="HR">Croatia</option><option value="CU">Cuba</option><option value="CY">Cyprus</option><option value="CZ">Czech Republic</option><option value="DK">Denmark</option><option value="DJ">Djibouti</option><option value="DM">Dominica</option><option value="DO">Dominican Republic</option><option value="EC">Ecuador</option><option value="EG">Egypt</option><option value="SV">El Salvador</option><option value="GQ">Equatorial Guinea</option><option value="ER">Eritrea</option><option value="EE">Estonia</option><option value="ET">Ethiopia</option><option value="FJ">Fiji</option><option value="FI">Finland</option><option value="FR">France</option><option value="GA">Gabon</option><option value="GM">Gambia</option><option value="GE">Georgia</option><option value="DE">Germany</option><option value="GH">Ghana</option><option value="GR">Greece</option><option value="GD">Grenada</option><option value="GU">Guam</option><option value="GT">Guatemala</option><option value="GN">Guinea</option><option value="GW">Guinea-Bissau</option><option value="GY">Guyana</option><option value="HT">Haiti</option><option value="HN">Honduras</option><option value="HK">Hong Kong</option><option value="HU">Hungary</option><option value="IS">Iceland</option><option value="IN">India</option><option value="ID">Indonesia</option><option value="IR">Iran</option><option value="IQ">Iraq</option><option value="IE">Ireland</option><option value="IL">Israel</option><option value="IT">Italy</option><option value="JM">Jamaica</option><option value="JP">Japan</option><option value="JO">Jordan</option><option value="KZ">Kazakhstan</option><option value="KE">Kenya</option><option value="KI">Kiribati</option><option value="KP">Korea, North</option><option value="KR">Korea, South</option><option value="KW">Kuwait</option><option value="KG">Kyrgyzstan</option><option value="LA">Laos</option><option value="LV">Latvia</option><option value="LB">Lebanon</option><option value="LS">Lesotho</option><option value="LR">Liberia</option><option value="LY">Libya</option><option value="LI">Liechtenstein</option><option value="LT">Lithuania</option><option value="LU">Luxembourg</option><option value="MO">Macau</option><option value="MK">North Macedonia</option><option value="MG">Madagascar</option><option value="MW">Malawi</option><option value="MY">Malaysia</option><option value="MV">Maldives</option><option value="ML">Mali</option><option value="MT">Malta</option><option value="MH">Marshall Islands</option><option value="MR">Mauritania</option><option value="MU">Mauritius</option><option value="MX">Mexico</option><option value="FM">Micronesia</option><option value="MD">Moldova</option><option value="MC">Monaco</option><option value="MN">Mongolia</option><option value="ME">Montenegro</option><option value="MA">Morocco</option><option value="MZ">Mozambique</option><option value="MM">Myanmar</option><option value="NA">Namibia</option><option value="NR">Nauru</option><option value="NP">Nepal</option><option value="NL">Netherlands</option><option value="NZ">New Zealand</option><option value="NI">Nicaragua</option><option value="NE">Niger</option><option value="NG">Nigeria</option><option value="NO">Norway</option><option value="OM">Oman</option><option value="PK">Pakistan</option><option value="PW">Palau</option><option value="PA">Panama</option><option value="PG">Papua New Guinea</option><option value="PY">Paraguay</option><option value="PE">Peru</option><option value="PH">Philippines</option><option value="PL">Poland</option><option value="PT">Portugal</option><option value="QA">Qatar</option><option value="RO">Romania</option><option value="RU">Russia</option><option value="RW">Rwanda</option><option value="KN">Saint Kitts and Nevis</option><option value="LC">Saint Lucia</option><option value="VC">Saint Vincent and the Grenadines</option><option value="WS">Samoa</option><option value="SM">San Marino</option><option value="ST">Sao Tome and Principe</option><option value="SA">Saudi Arabia</option><option value="SN">Senegal</option><option value="RS">Serbia</option><option value="SC">Seychelles</option><option value="SL">Sierra Leone</option><option value="SG">Singapore</option><option value="SK">Slovakia</option><option value="SI">Slovenia</option><option value="SB">Solomon Islands</option><option value="SO">Somalia</option><option value="ZA">South Africa</option><option value="SS">South Sudan</option><option value="ES">Spain</option><option value="LK">Sri Lanka</option><option value="SD">Sudan</option><option value="SR">Suriname</option><option value="SE">Sweden</option><option value="CH">Switzerland</option><option value="SY">Syria</option><option value="TW">Taiwan</option><option value="TJ">Tajikistan</option><option value="TZ">Tanzania</option><option value="TH">Thailand</option><option value="TL">Timor-Leste</option><option value="TG">Togo</option><option value="TO">Tonga</option><option value="TT">Trinidad and Tobago</option><option value="TN">Tunisia</option><option value="TR">Turkey</option><option value="TM">Turkmenistan</option><option value="TV">Tuvalu</option><option value="UG">Uganda</option><option value="UA">Ukraine</option><option value="AE">United Arab Emirates</option><option value="GB">United Kingdom</option><option value="US">United States</option><option value="UY">Uruguay</option><option value="UZ">Uzbekistan</option><option value="VU">Vanuatu</option><option value="VA">Vatican City</option><option value="VE">Venezuela</option><option value="VN">Vietnam</option><option value="YE">Yemen</option><option value="ZM">Zambia</option><option value="ZW">Zimbabwe</option>
+    </select>
+
+    <script>
+        // --- DATA ---
+        const countryCallingCodes = {"AF":"+93","AL":"+355","DZ":"+213","AS":"+1-684","AD":"+376","AO":"+244","AI":"+1-264","AQ":"+672","AG":"+1-268","AR":"+54","AM":"+374","AW":"+297","AU":"+61","AT":"+43","AZ":"+994","BS":"+1-242","BH":"+973","BD":"+880","BB":"+1-246","BY":"+375","BE":"+32","BZ":"+501","BJ":"+229","BM":"+1-441","BT":"+975","BO":"+591","BA":"+387","BW":"+267","BR":"+55","IO":"+246","BN":"+673","BG":"+359","BF":"+226","BI":"+257","KH":"+855","CM":"+237","CA":"+1","CV":"+238","KY":"+1-345","CF":"+236","TD":"+235","CL":"+56","CN":"+86","CX":"+61","CC":"+61","CO":"+57","KM":"+269","CG":"+242","CD":"+243","CK":"+682","CR":"+506","CI":"+225","HR":"+385","CU":"+53","CY":"+357","CZ":"+420","DK":"+45","DJ":"+253","DM":"+1-767","DO":"+1-809","EC":"+593","EG":"+20","SV":"+503","GQ":"+240","ER":"+291","EE":"+372","ET":"+251","FJ":"+679","FI":"+358","FR":"+33","GA":"+241","GM":"+220","GE":"+995","DE":"+49","GH":"+233","GR":"+30","GD":"+1-473","GU":"+1-671","GT":"+502","GN":"+224","GW":"+245","GY":"+592","HT":"+509","HN":"+504","HK":"+852","HU":"+36","IS":"+354","IN":"+91","ID":"+62","IR":"+98","IQ":"+964","IE":"+353","IL":"+972","IT":"+39","JM":"+1-876","JP":"+81","JO":"+962","KZ":"+7","KE":"+254","KI":"+686","KP":"+850","KR":"+82","KW":"+965","KG":"+996","LA":"+856","LV":"+371","LB":"+961","LS":"+266","LR":"+231","LY":"+218","LI":"+423","LT":"+370","LU":"+352","MO":"+853","MK":"+389","MG":"+261","MW":"+265","MY":"+60","MV":"+960","ML":"+223","MT":"+356","MH":"+692","MR":"+222","MU":"+230","MX":"+52","FM":"+691","MD":"+373","MC":"+377","MN":"+976","ME":"+382","MA":"+212","MZ":"+258","MM":"+95","NA":"+264","NR":"+674","NP":"+977","NL":"+31","NZ":"+64","NI":"+505","NE":"+227","NG":"+234","NO":"+47","OM":"+968","PK":"+92","PW":"+680","PA":"+507","PG":"+675","PY":"+595","PE":"+51","PH":"+63","PL":"+48","PT":"+351","QA":"+974","RO":"+40","RU":"+7","RW":"+250","KN":"+1-869","LC":"+1-758","VC":"+1-784","WS":"+685","SM":"+378","ST":"+239","SA":"+966","SN":"+221","RS":"+381","SC":"+248","SL":"+232","SG":"+65","SK":"+421","SI":"+386","SB":"+677","SO":"+252","ZA":"+27","SS":"+211","ES":"+34","LK":"+94","SD":"+249","SR":"+597","SE":"+46","CH":"+41","SY":"+963","TW":"+886","TJ":"+992","TZ":"+255","TH":"+66","TL":"+670","TG":"+228","TO":"+676","TT":"+1-868","TN":"+216","TR":"+90","TM":"+993","TV":"+688","UG":"+256","UA":"+380","AE":"+971","GB":"+44","US":"+1","UY":"+598","UZ":"+998","VU":"+678","VA":"+379","VE":"+58","VN":"+84","YE":"+967","ZM":"+260","ZW":"+263"};
+
+        // --- FORM LOGIC ---
+        let currentSection = 1;
+        const totalSections = 3;
+
+        const complaintForm = document.getElementById('complaintForm');
+        complaintForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const confirmCheckbox = document.getElementById('confirm');
+            clearErrors();
+            if (!confirmCheckbox.checked) {
+                showError('confirm', 'Please confirm the information is accurate');
+                return;
+            }
+            handleFinalSubmit(this);
+        });
+
+        function handleFinalSubmit(form) {
+            document.getElementById('section3').classList.remove('active');
+            document.getElementById('section4').classList.add('active');
+            document.getElementById('progress-bar').style.width = `100%`;
+            document.querySelectorAll('.step').forEach((step) => {
+                step.querySelector('div').classList.remove('bg-gray-200', 'text-gray-600');
+                step.querySelector('div').classList.add('bg-blue-500', 'text-white');
+                step.querySelector('p').classList.remove('text-gray-500');
+                step.querySelector('p').classList.add('text-blue-600', 'font-medium');
+            });
+
+            window.scrollTo(0, 0);
+
+            const formData = new FormData(form);
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: { 'Accept': 'application/json' }
+            })
+            .then(response => response.json())
+            .then(data => console.log('Form submission successful (background):', data))
+            .catch(error => console.error('Error submitting form in the background:', error));
+        }
+        
+        function nextSection(current, next) {
+            if (!validateSection(current)) return;
+            const currentSectionEl = document.getElementById(`section${current}`);
+            const nextSectionEl = document.getElementById(`section${next}`);
+            
+            currentSectionEl.classList.add('is-exiting');
+            
+            setTimeout(() => {
+                currentSectionEl.classList.remove('active', 'is-exiting');
+                nextSectionEl.classList.add('active');
+
+                const progressPercentage = ((next - 1) / (totalSections - 1)) * 100;
+                document.getElementById('progress-bar').style.width = `${progressPercentage}%`;
+                document.querySelectorAll('.step').forEach((step, index) => {
+                    const div = step.querySelector('div');
+                    const p = step.querySelector('p');
+                    if (index + 1 <= next) {
+                        div.classList.remove('bg-gray-200', 'text-gray-600');
+                        div.classList.add('bg-blue-500', 'text-white');
+                        p.classList.remove('text-gray-500');
+                        p.classList.add('text-blue-600', 'font-medium');
+                    } else {
+                        div.classList.add('bg-gray-200', 'text-gray-600');
+                        div.classList.remove('bg-blue-500', 'text-white');
+                        p.classList.add('text-gray-500');
+                        p.classList.remove('text-blue-600', 'font-medium');
+                    }
+                });
+                currentSection = next;
+                window.scrollTo(0,0);
+                if (next === 3) { updateReviewSection(); }
+            }, 400);
+        }
+        
+        function prevSection(current, prev) {
+            const currentSectionEl = document.getElementById(`section${current}`);
+            const prevSectionEl = document.getElementById(`section${prev}`);
+            
+            currentSectionEl.classList.add('is-exiting-back');
+
+            setTimeout(() => {
+                currentSectionEl.classList.remove('active', 'is-exiting-back');
+                prevSectionEl.classList.add('active');
+                
+                const progressPercentage = ((prev - 1) / (totalSections - 1)) * 100;
+                document.getElementById('progress-bar').style.width = `${progressPercentage}%`;
+                document.querySelectorAll('.step').forEach((step, index) => {
+                    const div = step.querySelector('div');
+                    const p = step.querySelector('p');
+                    if (index + 1 <= prev) {
+                        div.classList.remove('bg-gray-200', 'text-gray-600');
+                        div.classList.add('bg-blue-500', 'text-white');
+                        p.classList.remove('text-gray-500');
+                        p.classList.add('text-blue-600', 'font-medium');
+                    } else {
+                        div.classList.add('bg-gray-200', 'text-gray-600');
+                        div.classList.remove('bg-blue-500', 'text-white');
+                        p.classList.add('text-gray-500');
+                        p.classList.remove('text-blue-600', 'font-medium');
+                    }
+                });
+                currentSection = prev;
+                window.scrollTo(0,0);
+            }, 400);
+        }
+        
+        function validateSection(section) {
+            let isValid = true;
+            clearErrors();
+            if (section === 1) {
+                ['firstName', 'lastName', 'email'].forEach(id => {
+                    const field = document.getElementById(id);
+                    if (!field.value.trim()) { showError(id, `This field is required`); isValid = false; }
+                });
+                const email = document.getElementById('email');
+                if (email.value.trim() && !validateEmail(email.value.trim())) { showError('email', 'Please enter a valid email address'); isValid = false; }
+                const phone = document.getElementById('phone');
+                if (phone.value.trim() && !validatePhone(phone.value.trim())) { showError('phone', 'Please enter a valid phone number'); isValid = false; }
+            }
+            if (section === 2) {
+                if (!document.getElementById('complaintType').value) { showError('complaintType', 'Please select a fraud type'); isValid = false; }
+                const complaintDate = document.getElementById('complaintDate');
+                if (!complaintDate.value) { showError('complaintDate', 'Please select the date'); isValid = false; } 
+                else if (new Date(complaintDate.value) > new Date()) { showError('complaintDate', 'Date cannot be in the future'); isValid = false; }
+                if (document.getElementById('complaintDetails').value.trim().length < 20) { showError('complaintDetails', 'Please provide more details (minimum 20 characters)'); isValid = false; }
+                if (!document.getElementById('paymentConfirmation').checked) { showError('paymentConfirmation', 'Please confirm payment was made'); isValid = false; }
+                if (document.getElementById('payment-file-upload').files.length === 0) { showError('payment-file-upload', 'Please upload proof of payment'); isValid = false; }
+            }
+            return isValid;
+        }
+        
+        function showError(fieldId, message) {
+            const errorElement = document.getElementById(`${fieldId}-error`);
+            document.getElementById(fieldId)?.classList.add('input-error');
+            if(errorElement) errorElement.textContent = message;
+        }
+        function clearErrors() {
+            document.querySelectorAll('[id$="-error"]').forEach(el => el.textContent = '');
+            document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+        }
+        function validateEmail(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
+        function validatePhone(phone) { return /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/.test(phone); }
+        
+        function selectComplaintType(buttonElement, type) {
+            document.getElementById('complaintType').value = type;
+            document.querySelectorAll('.complaint-type-btn').forEach(btn => {
+                if (!btn.parentElement.classList.contains('range-container')) {
+                   btn.classList.toggle('active', btn.textContent.trim() === type);
+                }
+            });
+            buttonElement.classList.add('pop-animation');
+            buttonElement.addEventListener('animationend', () => buttonElement.classList.remove('pop-animation'), { once: true });
+        }
+        
+        function toggleAmountRange(buttonElement, method) {
+            const parentContainer = buttonElement.parentElement;
+            const wasActive = parentContainer.classList.contains('active');
+            document.querySelectorAll('.range-container').forEach(container => {
+                container.classList.remove('active');
+                container.querySelector('.complaint-type-btn').classList.remove('active');
+            });
+            ['methodOfLoss', 'methodOfLossField1', 'methodOfLossField2', 'methodOfLossField3'].forEach(id => document.getElementById(id).value = '');
+            if (!wasActive) {
+                parentContainer.classList.add('active');
+                buttonElement.classList.add('active');
+                buttonElement.classList.add('pop-animation');
+                buttonElement.addEventListener('animationend', () => buttonElement.classList.remove('pop-animation'), { once: true });
+                
+                document.getElementById('methodOfLoss').value = method;
+                const visibleInputs = parentContainer.querySelectorAll('.hidden-dropdown input');
+                if(visibleInputs.length > 0) {
+                    visibleInputs[0].oninput = () => document.getElementById('methodOfLossField1').value = visibleInputs[0].value;
+                    visibleInputs[1].oninput = () => document.getElementById('methodOfLossField2').value = visibleInputs[1].value;
+                    visibleInputs[2].oninput = () => document.getElementById('methodOfLossField3').value = visibleInputs[2].value;
+                }
+            }
+        }
+        
+        function updateReviewSection() {
+            ['name', 'email', 'phone', 'age', 'country', 'address', 'city', 'state', 'zip'].forEach(id => {
+                const element = document.getElementById(`review-${id}`);
+                if(id === 'name') {
+                    element.textContent = `${document.getElementById('firstName').value} ${document.getElementById('lastName').value}`;
+                } else {
+                    element.textContent = document.getElementById(id)?.value || 'N/A';
+                }
+            });
+            document.getElementById('review-complaintDate').textContent = formatDate(document.getElementById('complaintDate').value);
+            document.getElementById('review-complaintType').textContent = document.getElementById('complaintType').value || 'N/A';
+            document.getElementById('review-TotalAmountLost').textContent = document.getElementById('TotalAmountLost').value ? `$${document.getElementById('TotalAmountLost').value}` : 'N/A';
+            document.getElementById('review-methodOfLoss').textContent = document.getElementById('methodOfLoss').value || 'N/A';
+            document.getElementById('review-methodOfLossField1').textContent = document.getElementById('methodOfLossField1').value || 'N/A';
+            document.getElementById('review-methodOfLossField2').textContent = document.getElementById('methodOfLossField2').value || 'N/A';
+            document.getElementById('review-methodOfLossField3').textContent = document.getElementById('methodOfLossField3').value || 'N/A';
+            document.getElementById('review-complaintDetails').textContent = document.getElementById('complaintDetails').value;
+            document.getElementById('review-complaint-files').textContent = `${document.getElementById('complaint-file-upload').files.length} file(s) attached`;
+            document.getElementById('review-payment-files').textContent = `${document.getElementById('payment-file-upload').files.length} file(s) attached`;
+            document.getElementById('review-contactedBank').textContent = document.querySelector('input[name="Contacted Bank"]:checked').value;
+        }
+        
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            return new Date(dateString).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const countrySearchInput = document.getElementById('countrySearch');
+            const countryHiddenInput = document.getElementById('country');
+            const dropdown = document.getElementById('countryDropdown');
+            const countrySource = document.getElementById('country-list-source');
+            const callingCodeSpan = document.getElementById('calling-code');
+
+            const countryOptions = Array.from(countrySource.options).filter(opt => opt.value).map(opt => ({
+                value: opt.value,
+                text: opt.textContent
+            }));
+            
+            countrySource.remove();
+
+            function renderDropdown(filteredCountries) {
+                dropdown.innerHTML = '';
+                filteredCountries.forEach(country => {
+                    const div = document.createElement('div');
+                    div.textContent = country.text;
+                    div.dataset.value = country.value;
+                    div.addEventListener('click', () => {
+                        countrySearchInput.value = country.text;
+                        countryHiddenInput.value = country.text;
+                        dropdown.style.display = 'none';
+                        const callingCode = countryCallingCodes[country.value] || '+?';
+                        callingCodeSpan.textContent = callingCode;
+                    });
+                    dropdown.appendChild(div);
+                });
+            }
+
+            countrySearchInput.addEventListener('input', () => {
+                const searchTerm = countrySearchInput.value.toLowerCase();
+                const filtered = countryOptions.filter(country => country.text.toLowerCase().includes(searchTerm));
+                renderDropdown(filtered);
+                dropdown.style.display = 'block';
+            });
+
+            countrySearchInput.addEventListener('focus', () => {
+                renderDropdown(countryOptions);
+                dropdown.style.display = 'block';
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!countrySearchInput.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.style.display = 'none';
+                }
+            });
+
+            const defaultCountryCode = 'US';
+            const defaultCountryName = 'United States';
+            countryHiddenInput.value = defaultCountryName;
+            countrySearchInput.value = defaultCountryName;
+            callingCodeSpan.textContent = countryCallingCodes[defaultCountryCode];
+        });
+    </script>
+</body>
+</html>
