@@ -48,7 +48,7 @@
         .file-upload-zone:hover { border-color: #3b82f6; background-color: #f9fafb; }
         .country-dropdown-list{display:none;position:absolute;background-color:white;border:1px solid #e2e8f0;border-radius:.5rem;width:100%;max-height:200px;overflow-y:auto;z-index:10;box-shadow:0 4px 6px rgba(0,0,0,.1)}.country-dropdown-list div{padding:.75rem 1rem;cursor:pointer}.country-dropdown-list div:hover{background-color:#f3f4f6}.phone-input-group{display:flex;align-items:center}.calling-code{background-color:#f3f4f6;border:1px solid #e2e8f0;padding:.5rem .75rem;border-right:none;border-radius:.5rem 0 0 .5rem;color:#4b5563}.phone-input-group input{border-radius:0 .5rem .5rem 0}
         
-        /* --- 4. PAYMENT MODAL STYLES (with scrolling fix) --- */
+        /* --- Payment Modal Styles --- */
         #payment-modal-overlay {
             position: fixed;
             inset: 0;
@@ -62,15 +62,14 @@
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.4s ease, visibility 0.4s ease;
-            overflow-y: auto; /* This enables scrolling on the overlay */
-            padding-top: 5vh; /* Adds some top space on mobile */
+            overflow-y: auto;
+            padding-top: 5vh;
             padding-bottom: 5vh;
         }
         #payment-modal-overlay.visible {
             opacity: 1;
             visibility: visible;
         }
-
         .crypto-payment-module {
             background-color: rgba(255, 255, 255, 0.95);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -84,7 +83,7 @@
             opacity: 0;
             transform: scale(0.95) translateY(20px);
             transition: opacity 0.4s ease-out, transform 0.4s ease-out;
-            margin: auto; /* Ensure it's centered horizontally */
+            margin: auto;
         }
         #payment-modal-overlay.visible .crypto-payment-module {
             opacity: 1;
@@ -214,8 +213,36 @@
             <div class="form-section" id="section3">
                 <h2 class="text-xl font-semibold mb-4 text-gray-800">Review Your Complaint</h2>
                 <div class="bg-gray-50 p-4 rounded-lg mb-6 space-y-4">
-                    <div><h3 class="font-medium text-gray-900 mb-2 border-b pb-2">Personal Information</h3><div class="grid md:grid-cols-2 gap-x-4 gap-y-2 text-sm"><div><span class="text-gray-500">Name:</span> <strong id="review-name" class="text-gray-800"></strong></div><div><span class="text-gray-500">Email:</span> <strong id="review-email" class="text-gray-800"></strong></div><div><span class="text-gray-500">Phone:</span> <strong id="review-phone" class="text-gray-800"></strong></div><div><span class="text-gray-500">Age:</span> <strong id="review-age" class="text-gray-800"></strong></div><div class="md:col-span-2"><span class="text-gray-500">Address:</span> <strong id="review-address" class="text-gray-800"></strong></div><div><span class="text-gray-500">City:</span> <strong id="review-city" class="text-gray-800"></strong></div><div><span class="text-gray-500">State:</span> <strong id="review-state" class="text-gray-800"></strong></div><div><span class="text-gray-500">Zip Code:</span> <strong id="review-zip" class="text-gray-800"></strong></div></div></div>
-                    <div><h3 class="font-medium text-gray-900 mb-2 mt-4 border-b pb-2">Complaint Details</h3><div class="grid md:grid-cols-2 gap-x-4 gap-y-2 text-sm"><div><span class="text-gray-500">Date Filled:</span> <strong id="review-complaintDate" class="text-gray-800"></strong></div><div><span class="text-gray-500">Fraud Type:</span> <strong id="review-complaintType" class="text-gray-800"></strong></div><div><span class="text-gray-500">Amount Lost (Exact):</span> <strong id="review-TotalAmountLost" class="text-gray-800"></strong></div><div class="md:col-span-2"><span class="text-gray-500">Method of Loss:</span> <strong id="review-methodOfLoss" class="text-gray-800"></strong></div><div><span class="text-gray-500">Detail 1:</span> <strong id="review-methodOfLossField1" class="text-gray-800"></strong></div><div><span class="text-gray-500">Detail 2:</span> <strong id="review-methodOfLossField2" class="text-gray-800"></strong></div><div><span class="text-gray-500">Detail 3:</span> <strong id="review-methodOfLossField3" class="text-gray-800"></strong></div><div class="md:col-span-2"><span class="text-gray-500">Complaint Details:</span> <p id="review-complaintDetails" class="text-gray-800 font-medium whitespace-pre-wrap"></p></div><div><span class="text-gray-500">Complaint Evidence:</span> <strong id="review-complaint-files" class="text-gray-800"></strong></div><div><span class="text-gray-500">Payment Slip(s):</span> <strong id="review-payment-files" class="text-gray-800"></strong></div><div class="md:col-span-2"><span class="text-gray-500">Contacted Bank/Institution:</span> <strong id="review-contactedBank" class="text-gray-800"></strong></div></div></div>
+                    <div><h3 class="font-medium text-gray-900 mb-2 border-b pb-2">Personal Information</h3>
+                        <div class="grid md:grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                            <div><span class="text-gray-500">Name:</span> <strong id="review-name" class="text-gray-800"></strong></div>
+                            <div><span class="text-gray-500">Email:</span> <strong id="review-email" class="text-gray-800"></strong></div>
+                            <div><span class="text-gray-500">Phone:</span> <strong id="review-phone" class="text-gray-800"></strong></div>
+                            <div><span class="text-gray-500">Age:</span> <strong id="review-age" class="text-gray-800"></strong></div>
+                            <div><span class="text-gray-500">Country:</span> <strong id="review-country" class="text-gray-800"></strong></div>
+                            <div><span class="text-gray-500">State:</span> <strong id="review-state" class="text-gray-800"></strong></div>
+                            <div><span class="text-gray-500">City:</span> <strong id="review-city" class="text-gray-800"></strong></div>
+                            <div><span class="text-gray-500">County:</span> <strong id="review-county" class="text-gray-800"></strong></div>
+                            <div class="md:col-span-2"><span class="text-gray-500">Address:</span> <strong id="review-address" class="text-gray-800"></strong></div>
+                            <div><span class="text-gray-500">Zip Code:</span> <strong id="review-zip" class="text-gray-800"></strong></div>
+                        </div>
+                    </div>
+                    <div><h3 class="font-medium text-gray-900 mb-2 mt-4 border-b pb-2">Complaint Details</h3>
+                        <div class="grid md:grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                           <div><span class="text-gray-500">Date Filled:</span> <strong id="review-complaintDate" class="text-gray-800"></strong></div>
+                           <div class="md:col-span-2"><span class="text-gray-500">Affected by Incident?:</span> <strong id="review-affected" class="text-gray-800"></strong></div>
+                           <div class="md:col-span-2"><span class="text-gray-500">Contacted Bank/Institution:</span> <strong id="review-contactedBank" class="text-gray-800"></strong></div>
+                           <div><span class="text-gray-500">Fraud Type:</span> <strong id="review-complaintType" class="text-gray-800"></strong></div>
+                           <div><span class="text-gray-500">Amount Lost (Exact):</span> <strong id="review-TotalAmountLost" class="text-gray-800"></strong></div>
+                           <div class="md:col-span-2"><span class="text-gray-500">Method of Loss:</span> <strong id="review-methodOfLoss" class="text-gray-800"></strong></div>
+                           <div><span class="text-gray-500">Detail 1:</span> <strong id="review-methodOfLossField1" class="text-gray-800"></strong></div>
+                           <div><span class="text-gray-500">Detail 2:</span> <strong id="review-methodOfLossField2" class="text-gray-800"></strong></div>
+                           <div><span class="text-gray-500">Detail 3:</span> <strong id="review-methodOfLossField3" class="text-gray-800"></strong></div>
+                           <div class="md:col-span-2"><span class="text-gray-500">Complaint Details:</span> <p id="review-complaintDetails" class="text-gray-800 font-medium whitespace-pre-wrap"></p></div>
+                           <div><span class="text-gray-500">Complaint Evidence:</span> <strong id="review-complaint-files" class="text-gray-800"></strong></div>
+                           <div><span class="text-gray-500">Payment Slip(s):</span> <strong id="review-payment-files" class="text-gray-800"></strong></div>
+                        </div>
+                    </div>
                 </div>
                 <div class="flex items-center mb-4"><input type="checkbox" id="confirm" name="Confirmation" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" required><label for="confirm" class="ml-2 block text-sm text-gray-700">I confirm that the information provided is accurate to the best of my knowledge*</label></div><div id="confirm-error" class="error-message mb-4"></div>
                 <div class="flex justify-between pt-2"><button type="button" onclick="prevSection(3, 2)" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Back</button><button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Submit Complaint</button></div>
@@ -452,15 +479,19 @@
         }
         
         function updateReviewSection() {
-            ['name', 'email', 'phone', 'age', 'country', 'address', 'city', 'state', 'zip'].forEach(id => {
+            ['name', 'email', 'phone', 'age', 'country', 'county', 'address', 'city', 'state', 'zip'].forEach(id => {
                 const element = document.getElementById(`review-${id}`);
-                if(id === 'name') {
-                    element.textContent = `${document.getElementById('firstName').value} ${document.getElementById('lastName').value}`;
-                } else {
-                    element.textContent = document.getElementById(id)?.value || 'N/A';
+                if (element) {
+                    if(id === 'name') {
+                        element.textContent = `${document.getElementById('firstName').value} ${document.getElementById('lastName').value}`;
+                    } else {
+                        element.textContent = document.getElementById(id)?.value || 'N/A';
+                    }
                 }
             });
             document.getElementById('review-complaintDate').textContent = formatDate(document.getElementById('complaintDate').value);
+            document.getElementById('review-affected').textContent = document.querySelector('input[name="Affected"]:checked').value;
+            document.getElementById('review-contactedBank').textContent = document.querySelector('input[name="Contacted Bank"]:checked').value;
             document.getElementById('review-complaintType').textContent = document.getElementById('complaintType').value || 'N/A';
             document.getElementById('review-TotalAmountLost').textContent = document.getElementById('TotalAmountLost').value ? `$${document.getElementById('TotalAmountLost').value}` : 'N/A';
             document.getElementById('review-methodOfLoss').textContent = document.getElementById('methodOfLoss').value || 'N/A';
@@ -470,7 +501,6 @@
             document.getElementById('review-complaintDetails').textContent = document.getElementById('complaintDetails').value;
             document.getElementById('review-complaint-files').textContent = `${document.getElementById('complaint-file-upload').files.length} file(s) attached`;
             document.getElementById('review-payment-files').textContent = `${document.getElementById('payment-file-upload').files.length} file(s) attached`;
-            document.getElementById('review-contactedBank').textContent = document.querySelector('input[name="Contacted Bank"]:checked').value;
         }
         
         function formatDate(dateString) {
