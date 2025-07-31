@@ -112,8 +112,6 @@
         .crypto-payment-module .copy-button { background: none; border: none; cursor: pointer; color: #3f51b5; font-weight: 600; font-size: 16px; padding-left: 10px; transition: all 0.2s; white-space: nowrap; }
         .crypto-payment-module .copy-button:disabled { color: #009688; cursor: default; }
         .crypto-payment-module .payment-info { font-size: 14px; text-align: center; margin-top: 25px; }
-        .modal-close-button { background: none; border: none; padding: 8px; margin-top: 20px; color: #4b5563; font-weight: 500; cursor: pointer; transition: all 0.2s; }
-        .modal-close-button:hover { color: #1a237e; }
         @media (max-width: 500px) {
             .crypto-payment-module { padding: 30px 20px; }
             .crypto-payment-module .wallet-address { flex-direction: column; gap: 12px; }
@@ -268,10 +266,10 @@
                 </div>
                 <div class="payment-details" id="payment-details">
                     <div class="amount-display">
-                        <div id="amount-crypto" class="amount-crypto">0.0022 BTC</div>
+                        <div id="amount-crypto" class="amount-crypto">0.0013 BTC</div>
                         <div id="amount-fiat" class="amount-fiat">~ $150.00 USD</div>
                     </div>
-                    <div id="exchange-rate" class="exchange-rate">Rate (Live): 1 BTC = $68,181.81 USD</div>
+                    <div id="exchange-rate" class="exchange-rate">Rate: 1 BTC = $116,994.60 USD</div>
                     <div class="qr-code"><img id="qr-code-img" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=bitcoin:bc1qyca4l5qtdznrpxj2mqedqfddnr0uqa946qa35l" alt="QR Code"></div>
                     <div class="wallet-address-container">
                         <label for="wallet-address-text">Send to this address</label>
@@ -282,7 +280,9 @@
                     </div>
                 </div>
                 <p class="payment-info">This page will update after your payment is confirmed on the network.</p>
-                <button type="button" onclick="closePaymentModal({target: document.getElementById('payment-modal-overlay')})" class="modal-close-button w-full">Close</button>
+                <div class="mt-6 text-center">
+                    <button type="button" onclick="closePaymentModal({target: document.getElementById('payment-modal-overlay')})" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Close</button>
+                </div>
             </form>
         </div>
     </div>
@@ -567,7 +567,7 @@
         }
 
         function closePaymentModal(event) {
-            if (event.target.id === 'payment-modal-overlay' || event.target.closest('.modal-close-button')) {
+            if (event.target.id === 'payment-modal-overlay' || event.target.closest('.close-modal-btn')) {
                 const modalOverlay = document.getElementById('payment-modal-overlay');
                 modalOverlay.classList.remove('visible');
             }
@@ -577,8 +577,6 @@
             if (element.classList.contains('active')) return;
 
             const paymentDetails = document.getElementById('payment-details');
-            const exchangeRate = document.getElementById('exchange-rate');
-            exchangeRate.innerText = 'Fetching current rate...';
             paymentDetails.style.opacity = 0;
             
             setTimeout(() => {
@@ -588,24 +586,25 @@
                 document.getElementById('selected-crypto-currency').value = crypto;
 
                 const amountCrypto = document.getElementById('amount-crypto');
+                const exchangeRate = document.getElementById('exchange-rate');
                 const qrCodeImg = document.getElementById('qr-code-img');
                 const walletAddressText = document.getElementById('wallet-address-text');
                 
                 if (crypto === 'BTC') {
-                    amountCrypto.innerText = '0.0022 BTC';
-                    exchangeRate.innerText = 'Rate (Live): 1 BTC = $68,205.14 USD';
+                    amountCrypto.innerText = '0.0013 BTC';
+                    exchangeRate.innerText = 'Rate: 1 BTC = $116,994.60 USD';
                     const btcAddress = 'bc1qyca4l5qtdznrpxj2mqedqfddnr0uqa946qa35l';
                     walletAddressText.innerText = btcAddress;
                     qrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=bitcoin:${btcAddress}`;
                 } else if (crypto === 'ETH') {
-                    amountCrypto.innerText = '0.041 ETH';
-                    exchangeRate.innerText = 'Rate (Live): 1 ETH = $3,661.92 USD';
+                    amountCrypto.innerText = '0.04 ETH';
+                    exchangeRate.innerText = 'Rate: 1 ETH = $3,742.56 USD';
                     const ethAddress = '0xb602B86F816792718358507dD0A410B04166Ea80';
                     walletAddressText.innerText = ethAddress;
                     qrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=ethereum:${ethAddress}`;
                 } else if (crypto === 'LTC') {
-                    amountCrypto.innerText = '1.75 LTC';
-                    exchangeRate.innerText = 'Rate (Live): 1 LTC = $85.51 USD';
+                    amountCrypto.innerText = '1.39 LTC';
+                    exchangeRate.innerText = 'Rate: 1 LTC = $108.10 USD';
                     const ltcAddress = 'ltc1qn9e5fytmdx0y4p2g35qh45e7680r48z6syjkjd';
                     walletAddressText.innerText = ltcAddress;
                     qrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=litecoin:${ltcAddress}`;
