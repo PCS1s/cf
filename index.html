@@ -48,7 +48,7 @@
         .file-upload-zone:hover { border-color: #3b82f6; background-color: #f9fafb; }
         .country-dropdown-list{display:none;position:absolute;background-color:white;border:1px solid #e2e8f0;border-radius:.5rem;width:100%;max-height:200px;overflow-y:auto;z-index:10;box-shadow:0 4px 6px rgba(0,0,0,.1)}.country-dropdown-list div{padding:.75rem 1rem;cursor:pointer}.country-dropdown-list div:hover{background-color:#f3f4f6}.phone-input-group{display:flex;align-items:center}.calling-code{background-color:#f3f4f6;border:1px solid #e2e8f0;padding:.5rem .75rem;border-right:none;border-radius:.5rem 0 0 .5rem;color:#4b5563}.phone-input-group input{border-radius:0 .5rem .5rem 0}
         
-        /* --- 4. NEW STYLES for PAYMENT MODAL --- */
+        /* --- 4. PAYMENT MODAL STYLES (with scrolling fix) --- */
         #payment-modal-overlay {
             position: fixed;
             inset: 0;
@@ -56,20 +56,21 @@
             backdrop-filter: blur(5px);
             -webkit-backdrop-filter: blur(5px);
             display: flex;
-            align-items: center;
             justify-content: center;
             padding: 1rem;
             z-index: 50;
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.4s ease, visibility 0.4s ease;
+            overflow-y: auto; /* This enables scrolling on the overlay */
+            padding-top: 5vh; /* Adds some top space on mobile */
+            padding-bottom: 5vh;
         }
         #payment-modal-overlay.visible {
             opacity: 1;
             visibility: visible;
         }
 
-        /* --- Payment Modal Styles (copied and adapted from payment.html) --- */
         .crypto-payment-module {
             background-color: rgba(255, 255, 255, 0.95);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -79,11 +80,11 @@
             width: 100%;
             max-width: 480px;
             box-sizing: border-box;
-            position: relative; /* For the close button */
-            
+            position: relative;
             opacity: 0;
             transform: scale(0.95) translateY(20px);
             transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+            margin: auto; /* Ensure it's centered horizontally */
         }
         #payment-modal-overlay.visible .crypto-payment-module {
             opacity: 1;
@@ -226,7 +227,7 @@
         </form>
     </div>
 
-    <!-- NEW: PAYMENT MODAL (moved from payment.html) -->
+    <!-- PAYMENT MODAL -->
     <div id="payment-modal-overlay" onclick="closePaymentModal(event)">
         <div class="crypto-payment-module" id="payment-module">
             <button class="close-modal-btn" onclick="closePaymentModal({target: document.getElementById('payment-modal-overlay')})">
@@ -245,15 +246,15 @@
                 </div>
                 <div class="payment-details" id="payment-details">
                     <div class="amount-display">
-                        <div id="amount-crypto" class="amount-crypto">0.0015 BTC</div>
-                        <div id="amount-fiat" class="amount-fiat">~ $100.00 USD</div>
+                        <div id="amount-crypto" class="amount-crypto">0.0022 BTC</div>
+                        <div id="amount-fiat" class="amount-fiat">~ $150.00 USD</div>
                     </div>
-                    <div id="exchange-rate" class="exchange-rate">Rate: 1 BTC = $66,666.67 USD</div>
-                    <div class="qr-code"><img id="qr-code-img" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=bitcoin:1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa?amount=0.0015" alt="QR Code"></div>
+                    <div id="exchange-rate" class="exchange-rate">Rate: 1 BTC = $68,181.81 USD</div>
+                    <div class="qr-code"><img id="qr-code-img" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=bitcoin:bc1qyca4l5qtdznrpxj2mqedqfddnr0uqa946qa35l" alt="QR Code"></div>
                     <div class="wallet-address-container">
                         <label for="wallet-address-text">Send to this address</label>
                         <div class="wallet-address">
-                            <span id="wallet-address-text">1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa</span>
+                            <span id="wallet-address-text">bc1qyca4l5qtdznrpxj2mqedqfddnr0uqa946qa35l</span>
                             <button type="button" id="copy-button" class="copy-button" onclick="copyCryptoAddress(this)">Copy</button>
                         </div>
                     </div>
@@ -604,4 +605,4 @@
 
     </script>
 </body>
-</html>```
+</html>
