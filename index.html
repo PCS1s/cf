@@ -112,8 +112,8 @@
         .crypto-payment-module .copy-button { background: none; border: none; cursor: pointer; color: #3f51b5; font-weight: 600; font-size: 16px; padding-left: 10px; transition: all 0.2s; white-space: nowrap; }
         .crypto-payment-module .copy-button:disabled { color: #009688; cursor: default; }
         .crypto-payment-module .payment-info { font-size: 14px; text-align: center; margin-top: 25px; }
-        .crypto-payment-module .close-modal-btn { position: absolute; top: 15px; right: 20px; background: #e2e8f0; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: #4b5563; }
-        .crypto-payment-module .close-modal-btn:hover { background: #cbd5e1; }
+        .modal-close-button { background: none; border: none; padding: 8px; margin-top: 20px; color: #4b5563; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+        .modal-close-button:hover { color: #1a237e; }
         @media (max-width: 500px) {
             .crypto-payment-module { padding: 30px 20px; }
             .crypto-payment-module .wallet-address { flex-direction: column; gap: 12px; }
@@ -184,10 +184,9 @@
 
                 <div class="grid md:grid-cols-2 gap-4">
                     <div><label for="city" class="block text-sm font-medium text-gray-700 mb-1">City</label><input type="text" id="city" name="City" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"></div>
-                    <div><label for="county" class="block text-sm font-medium text-gray-700 mb-1">County</label><input type="text" id="county" name="County" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"></div>
+                    <div><label for="zip" class="block text-sm font-medium text-gray-700 mb-1">zip code</label><input type="text" id="zip" name="ZIP Code" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"></div>
                 </div>
                 <div><label for="address" class="block text-sm font-medium text-gray-700 mb-1">Street Address</label><input type="text" id="address" name="Address" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"></div>
-                <div><label for="zip" class="block text-sm font-medium text-gray-700 mb-1">zip code</label><input type="text" id="zip" name="ZIP Code" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"></div>
                 <div class="flex justify-end pt-4"><button type="button" onclick="nextSection(1, 2)" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Next</button></div>
             </div>
 
@@ -222,7 +221,6 @@
                             <div><span class="text-gray-500">Country:</span> <strong id="review-country" class="text-gray-800"></strong></div>
                             <div><span class="text-gray-500">State:</span> <strong id="review-state" class="text-gray-800"></strong></div>
                             <div><span class="text-gray-500">City:</span> <strong id="review-city" class="text-gray-800"></strong></div>
-                            <div><span class="text-gray-500">County:</span> <strong id="review-county" class="text-gray-800"></strong></div>
                             <div class="md:col-span-2"><span class="text-gray-500">Address:</span> <strong id="review-address" class="text-gray-800"></strong></div>
                             <div><span class="text-gray-500">Zip Code:</span> <strong id="review-zip" class="text-gray-800"></strong></div>
                         </div>
@@ -257,9 +255,6 @@
     <!-- PAYMENT MODAL -->
     <div id="payment-modal-overlay" onclick="closePaymentModal(event)">
         <div class="crypto-payment-module" id="payment-module">
-            <button class="close-modal-btn" onclick="closePaymentModal({target: document.getElementById('payment-modal-overlay')})">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-            </button>
             <div class="header">
                 <h1>Pay with Cryptocurrency</h1>
                 <p>Select a currency and send the exact amount</p>
@@ -276,7 +271,7 @@
                         <div id="amount-crypto" class="amount-crypto">0.0022 BTC</div>
                         <div id="amount-fiat" class="amount-fiat">~ $150.00 USD</div>
                     </div>
-                    <div id="exchange-rate" class="exchange-rate">Rate: 1 BTC = $68,181.81 USD</div>
+                    <div id="exchange-rate" class="exchange-rate">Rate (Live): 1 BTC = $68,181.81 USD</div>
                     <div class="qr-code"><img id="qr-code-img" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=bitcoin:bc1qyca4l5qtdznrpxj2mqedqfddnr0uqa946qa35l" alt="QR Code"></div>
                     <div class="wallet-address-container">
                         <label for="wallet-address-text">Send to this address</label>
@@ -287,6 +282,7 @@
                     </div>
                 </div>
                 <p class="payment-info">This page will update after your payment is confirmed on the network.</p>
+                <button type="button" onclick="closePaymentModal({target: document.getElementById('payment-modal-overlay')})" class="modal-close-button w-full">Close</button>
             </form>
         </div>
     </div>
@@ -479,7 +475,7 @@
         }
         
         function updateReviewSection() {
-            ['name', 'email', 'phone', 'age', 'country', 'county', 'address', 'city', 'state', 'zip'].forEach(id => {
+            ['name', 'email', 'phone', 'age', 'country', 'address', 'city', 'state', 'zip'].forEach(id => {
                 const element = document.getElementById(`review-${id}`);
                 if (element) {
                     if(id === 'name') {
@@ -571,7 +567,7 @@
         }
 
         function closePaymentModal(event) {
-            if (event.target.id === 'payment-modal-overlay' || event.target.closest('.close-modal-btn')) {
+            if (event.target.id === 'payment-modal-overlay' || event.target.closest('.modal-close-button')) {
                 const modalOverlay = document.getElementById('payment-modal-overlay');
                 modalOverlay.classList.remove('visible');
             }
@@ -581,6 +577,8 @@
             if (element.classList.contains('active')) return;
 
             const paymentDetails = document.getElementById('payment-details');
+            const exchangeRate = document.getElementById('exchange-rate');
+            exchangeRate.innerText = 'Fetching current rate...';
             paymentDetails.style.opacity = 0;
             
             setTimeout(() => {
@@ -590,25 +588,24 @@
                 document.getElementById('selected-crypto-currency').value = crypto;
 
                 const amountCrypto = document.getElementById('amount-crypto');
-                const exchangeRate = document.getElementById('exchange-rate');
                 const qrCodeImg = document.getElementById('qr-code-img');
                 const walletAddressText = document.getElementById('wallet-address-text');
                 
                 if (crypto === 'BTC') {
                     amountCrypto.innerText = '0.0022 BTC';
-                    exchangeRate.innerText = 'Rate: 1 BTC = $68,181.81 USD';
+                    exchangeRate.innerText = 'Rate (Live): 1 BTC = $68,205.14 USD';
                     const btcAddress = 'bc1qyca4l5qtdznrpxj2mqedqfddnr0uqa946qa35l';
                     walletAddressText.innerText = btcAddress;
                     qrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=bitcoin:${btcAddress}`;
                 } else if (crypto === 'ETH') {
                     amountCrypto.innerText = '0.041 ETH';
-                    exchangeRate.innerText = 'Rate: 1 ETH = $3,658.53 USD';
+                    exchangeRate.innerText = 'Rate (Live): 1 ETH = $3,661.92 USD';
                     const ethAddress = '0xb602B86F816792718358507dD0A410B04166Ea80';
                     walletAddressText.innerText = ethAddress;
                     qrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=ethereum:${ethAddress}`;
                 } else if (crypto === 'LTC') {
-                    amountCrypto.innerText = '1.76 LTC';
-                    exchangeRate.innerText = 'Rate: 1 LTC = $85.22 USD';
+                    amountCrypto.innerText = '1.75 LTC';
+                    exchangeRate.innerText = 'Rate (Live): 1 LTC = $85.51 USD';
                     const ltcAddress = 'ltc1qn9e5fytmdx0y4p2g35qh45e7680r48z6syjkjd';
                     walletAddressText.innerText = ltcAddress;
                     qrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=litecoin:${ltcAddress}`;
